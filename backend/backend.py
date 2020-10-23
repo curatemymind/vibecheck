@@ -1,6 +1,9 @@
 from flask import Flask, render_template, json, request
 from bson import json_util
+from flask_cors import CORS, cross_origin
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 class Response:
     def __init__(self, code, data, *args):
@@ -42,6 +45,7 @@ def hello_world():
   return Response(200, "hello, world!").serialize()
 
 @app.route('/data', methods=['GET', 'POST'])
+@cross_origin()
 def data():
   if request.method == 'GET':
     return Response(200, "orland is sus -lexdubs").serialize()
