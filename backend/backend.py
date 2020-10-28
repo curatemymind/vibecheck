@@ -1,6 +1,10 @@
 from flask import Flask, render_template, json, request
 from bson import json_util
 from flask_cors import CORS, cross_origin
+import pymysql
+
+db = pymysql.connect('vibecheckdb.cfmab8sxzhn7.us-east-2.rds.amazonaws.com', 'admin', 'rootroot')
+
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
