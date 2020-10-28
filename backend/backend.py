@@ -1,9 +1,24 @@
-from flask import Flask, render_template, json, request
+from flask import Flask, render_template, json, request, redirect
 from bson import json_util
 from flask_cors import CORS, cross_origin
 import pymysql
 
-db = pymysql.connect('vibecheckdb.cfmab8sxzhn7.us-east-2.rds.amazonaws.com', 'admin', 'rootroot')
+#connection string to RDS. This is preferred because it lets you pass in the
+#database argument rather than having to select it first, more condensed
+db = pymysql.connect(
+  host="vibecheckdb.cfmab8sxzhn7.us-east-2.rds.amazonaws.com",
+  user="admin",
+  password="rootroot",
+  database="testing"
+)
+
+#sets cursor
+cursor = db.cursor()
+
+
+sql = '''show tables'''
+cursor.execute(sql)
+print(cursor.fetchall())
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -52,11 +67,26 @@ def hello_world():
 @cross_origin()
 def data():
   if request.method == 'GET':
-    return Response(200, "orland is sus -lexdubs").serialize()
+    #queryResult array
+    res = []
+    #select all data from table test and set it equal to the cursor
+    cursor.execute("SELECT * FROM test")
+    queryResult = cursor.fetchall()
+    for x in queryResult:
+      print(x)
+      res.append(x)
+    #send the dictionary over to the frontend
+    return Response(200, res).serialize()
   if request.method == 'POST':
     document = request.form.to_dict()
     dummyData = document['dummydata']
-    return Response(200, dummyData).serialize()
+    #goes into the test table and inserts the form's dummy data value
+    cursor.execute("INSERT INTO test (dummyData) VALUES (%s)", dummyData)
+    db.commit()
+    #redirects user to the frontend homepage so they can see the update immediately
+    #this is a sort of unit test, it sends data through the POST and redirects you to
+    #a page that pulls from the GET, In both of these, the db is being interacted with
+    return redirect("http://localhost:3000/")
 
 if __name__ == '__main__':
   app.run(host="localhost", port=5000, debug=True)
