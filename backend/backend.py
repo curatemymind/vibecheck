@@ -2,6 +2,10 @@ from flask import Flask, render_template, json, request, redirect
 from bson import json_util
 from flask_cors import CORS, cross_origin
 import pymysql
+import os
+import sys
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 
 #connection string to RDS. This is preferred because it lets you pass in the
 #database argument rather than having to select it first, more condensed
@@ -12,6 +16,8 @@ db = pymysql.connect(
   database="testing"
 )
 
+os.environ["SPOTIPY_CLIENT_ID"] = "63e7b7530d13411f9e292730a6ed552e"
+os.environ["SPOTIPY_CLIENT_SECRET"] = "4893989706694f2489d4a44f160089c1"
 #sets cursor
 cursor = db.cursor()
 
@@ -87,6 +93,32 @@ def data():
     #this is a sort of unit test, it sends data through the POST and redirects you to
     #a page that pulls from the GET, In both of these, the db is being interacted with
     return redirect("http://localhost:3000/")
+
+
+#spotify implementation
+#spotify username: 4l05jlcp1nkx9islgr7ontt7c
+#client id: 63e7b7530d13411f9e292730a6ed552e
+#secret: 4893989706694f2489d4a44f160089c1
+@app.route('/testspotify')
+def test_spotify():
+  lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
+
+  spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+  results = spotify.artist_top_tracks(lz_uri)
+
+  for track in results['tracks'][:10]:
+      print('track    : ' + track['name'])
+      print('audio    : ' + track['preview_url'])
+      print('cover art: ' + track['album']['images'][0]['url'])
+      print()
+  return Response(200, "tested spotify check terminal log!").serialize()
+
+@app.route('/spotify')
+def spotify():
+  return Response(200, "successful redirect!").serialize()
+
+user = '4l05jlcp1nkx9islgr7ontt7c'
+scope = 'user-read-private user-read-playback-state user-modify-playback-state'
 
 if __name__ == '__main__':
   app.run(host="localhost", port=5000, debug=True)
