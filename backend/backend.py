@@ -94,6 +94,16 @@ def data():
     #a page that pulls from the GET, In both of these, the db is being interacted with
     return redirect("http://localhost:3000/")
 
+@app.route('/user', methods=['GET', 'POST'])
+def user():
+  if request.method == 'POST': 
+    document = request.form.to_dict()
+    email = document['email']
+    rawPassword = document['rawPassword']
+    genres = request.form.getlist('genres')
+    artists = request.form.getlist('artists')
+  return Response(200, [email, rawPassword, genres, artists]).serialize()
+
 
 #spotify implementation
 #spotify username: 4l05jlcp1nkx9islgr7ontt7c
@@ -105,7 +115,6 @@ def test_spotify():
 
   spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
   results = spotify.artist_top_tracks(lz_uri)
-
   for track in results['tracks'][:10]:
       print('track    : ' + track['name'])
       print('audio    : ' + track['preview_url'])
@@ -123,3 +132,7 @@ scope = 'user-read-private user-read-playback-state user-modify-playback-state'
 if __name__ == '__main__':
   app.run(host="localhost", port=5000, debug=True)
   
+
+  #/user user sign up + top three artists [predefined] + top three genres [predefined] + vibe +  
+  #/login login 
+  #

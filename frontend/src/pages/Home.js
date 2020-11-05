@@ -31,10 +31,32 @@ class Home extends React.Component {
     return (
       <div>
         <h1>{this.state.data}</h1>
-        <form action = 'http://localhost:5000/data' method = 'POST'>
+        <form action = 'http://localhost:5000/user' method = 'POST'>
             <br></br>
-          <input required type="text" name="dummydata" placeholder="Enter your dummy data"></input>
+            <input required type="email" name="email" placeholder="enter an email address"></input>
+            <input required type="password" name="rawPassword" placeholder="enter a password"></input>
+            
             <br></br>
+
+            <label for="genres">Choose three Genres:</label>
+            <br></br>
+              <select name="genres" id="genres" multiple>
+                <option value="Genre1">Genre1</option>
+                <option value="Genre2">Genre2</option>
+                <option value="Genre3">Genre3</option>
+                <option value="Genre4">Genre4</option>
+              </select>
+              <br></br>
+              <label for="artists">Choose three artists:</label>
+              <br></br>
+              <select name="artists" id="artists" multiple>
+                <option value="Artist1">Artist1</option>
+                <option value="Artist2">Artist2</option>
+                <option value="Artist3">Artist3</option>
+                <option value="Artist4">Artist4</option>
+              </select>
+              <br></br>
+
           <button type="submit">Sign Up</button>
         </form>
       </div>
