@@ -9,6 +9,7 @@ class Home extends React.Component {
     super();
     this.state = {
       data: null,
+      genres: null
     };
   }
 
@@ -22,11 +23,27 @@ class Home extends React.Component {
       }).catch((error) => {
           alert("There was an error connecting to the api")
           console.error(error);
+      }); 
+  
+  axios.get(`http://localhost:5000/allGenres`)
+  .then((response) => {
+      this.setState({
+          genres: response.data.data.genres
       });
+  }).catch((error) => {
+      alert("There was an error connecting to the api")
+      console.error(error);
+  });
  }
 
   render()
   {  
+    if(this.state.genres != null)
+    {
+      this.items = this.state.genres.map((item, key) =>
+        <option name={item} key={key}>{item}</option>
+      ); 
+    }
     
     return (
       <div>
@@ -37,14 +54,10 @@ class Home extends React.Component {
             <input required type="password" name="rawPassword" placeholder="enter a password"></input>
             
             <br></br>
-
             <label for="genres">Choose three Genres:</label>
             <br></br>
               <select name="genres" id="genres" multiple>
-                <option value="Genre1">Genre1</option>
-                <option value="Genre2">Genre2</option>
-                <option value="Genre3">Genre3</option>
-                <option value="Genre4">Genre4</option>
+                {this.items}
               </select>
               <br></br>
               <label for="artists">Choose three artists:</label>

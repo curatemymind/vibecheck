@@ -20,7 +20,7 @@ os.environ["SPOTIPY_CLIENT_ID"] = "63e7b7530d13411f9e292730a6ed552e"
 os.environ["SPOTIPY_CLIENT_SECRET"] = "4893989706694f2489d4a44f160089c1"
 #sets cursor
 cursor = db.cursor()
-
+spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
 sql = '''show tables'''
 cursor.execute(sql)
@@ -113,17 +113,35 @@ def user():
 def test_spotify():
   lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
 
-  spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
   results = spotify.artist_top_tracks(lz_uri)
-  for track in results['tracks'][:10]:
-      print('track    : ' + track['name'])
-      print('audio    : ' + track['preview_url'])
-      print('cover art: ' + track['album']['images'][0]['url'])
-      print()
+  print(spotify.recommendation_genre_seeds())
+  #for track in results['tracks'][:10]:
+      #print('track    : ' + track['name'])
+      #print('audio    : ' + track['preview_url'])
+      #print('cover art: ' + track['album']['images'][0]['url'])
+      #print()
   return Response(200, "tested spotify check terminal log!").serialize()
 
+@app.route('/allGenres')
+def all_genres():
+  results = spotify.recommendation_genre_seeds()
+  return Response(200, results).serialize()
+
+@app.route('/allArtists')
+def all_artists():
+  #results = spotify.current_user_top_artists()
+
+  urn = 'spotify:artist:3jOstUTkEu2JkjvRdBA5Gu'
+
+  artist = spotify.artist(urn)
+  print(artist)
+
+  user = spotify.user('plamere')
+  print(user)
+  return Response(200, user).serialize()
+
 @app.route('/spotify')
-def spotify():
+def spo():
   return Response(200, "successful redirect!").serialize()
 
 user = '4l05jlcp1nkx9islgr7ontt7c'
