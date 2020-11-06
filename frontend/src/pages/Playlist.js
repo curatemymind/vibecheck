@@ -2,15 +2,14 @@ import React from 'react';
 import '../vibecheck.css';
 import { Redirect } from "react-router-dom";
 
-class Home extends React.Component { 
+class Playlist extends React.Component { 
 
   //the states of emotion and source will be set to null initially until the user had filled out the form.
   constructor() {
     super();
     this.state = {
       data: null,
-      genres: null,
-      recArtists: null,
+      genres: null
     };
   }
 
@@ -35,23 +34,6 @@ class Home extends React.Component {
       alert("There was an error connecting to the api")
       console.error(error);
   });
-
-  axios.get(`http://localhost:5000/recommendations`)
-  .then((response) => {
-    var length = (response.data.data.tracks.length)
-    
-    var tempArr = []
-    for(var i = 0; i < length; i++)
-    {
-      tempArr.push(response.data.data.tracks[i].artists[0].name)
-    }
-      this.setState({
-          recArtists: tempArr
-      });
-  }).catch((error) => {
-      alert("There was an error connecting to the api")
-      console.error(error);
-  });
  }
 
   render()
@@ -62,17 +44,9 @@ class Home extends React.Component {
         <option name={item} key={key}>{item}</option>
       ); 
     }
-
-    if(this.state.recArtists != null)
-    {
-      this.artists = this.state.recArtists.map((item, key) =>
-        <option name={item} key={key}>{item}</option>
-      ); 
-    }
     
     return (
       <div>
-        {this.state.recArtists}
         <h1>{this.state.data}</h1>
         <form action = 'http://localhost:5000/user' method = 'POST'>
             <br></br>
@@ -89,7 +63,10 @@ class Home extends React.Component {
               <label for="artists">Choose three artists:</label>
               <br></br>
               <select name="artists" id="artists" multiple>
-                {this.artists}
+                <option value="Artist1">Artist1</option>
+                <option value="Artist2">Artist2</option>
+                <option value="Artist3">Artist3</option>
+                <option value="Artist4">Artist4</option>
               </select>
               <br></br>
 
@@ -99,4 +76,4 @@ class Home extends React.Component {
     )        
   }
 }
-export default Home;
+export default Playlist;

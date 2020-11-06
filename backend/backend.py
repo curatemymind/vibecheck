@@ -127,6 +127,11 @@ def all_genres():
   results = spotify.recommendation_genre_seeds()
   return Response(200, results).serialize()
 
+@app.route('/recommendations')
+def rec():
+  results = spotify.recommendations(None, ['alternative'])
+  return Response(200, results).serialize()
+
 @app.route('/allArtists')
 def all_artists():
   #results = spotify.current_user_top_artists()
