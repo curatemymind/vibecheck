@@ -15,14 +15,39 @@ const Countries = [
   { label: "Venezuela", value: 58 }
 ];
 
+
+
 class App extends Component {
+
+  constructor() {
+    super();
+    this.state = {
+      countries: []
+      
+    }
+  }
+  
+  handleCountry = newCountry => {
+    var string = ""
+    
+    for(var i = 0; i < newCountry.length; i++)
+    {
+      string += (newCountry[i]['label'] + ", ")
+    }
+    alert(string)
+  
+  };
+
+
+
+
   render() {
     return (
       <div className="container">
         <div className="row">
           <div className="col-md-3"></div>
           <div className="col-md-6">
-            <Select options={Countries} components={animatedComponents}
+            <Select options={Countries} onChange={this.handleCountry} components={animatedComponents}
               isMulti />
           </div>
           <div className="col-md-4"></div>

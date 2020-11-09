@@ -12,7 +12,8 @@ we would like to render*/
 const routing = (
   <Router>
     <Switch>
-      <Route exact path="/" component={App}/>  
+      <Route exact path="/" component={Home}/> 
+      <Route exact path="/test" component={App}/>  
     </Switch>
   </Router>
 )

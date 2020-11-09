@@ -1,7 +1,12 @@
 import React from 'react';
 import '../vibecheck.css';
 import { Redirect } from "react-router-dom";
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 
+
+const genres = []
+const animatedComponents = makeAnimated();
 class Home extends React.Component { 
 
   //the states of emotion and source will be set to null initially until the user had filled out the form.
@@ -28,6 +33,12 @@ class Home extends React.Component {
   
   axios.get(`http://localhost:5000/allGenres`)
   .then((response) => {
+    
+      for(var i = 0; i < response.data.data.genres.length; i++)
+      {
+        genres.push({label: response.data.data.genres[i], value: response.data.data.genres[i]})
+      }
+      
       this.setState({
           genres: response.data.data.genres
       });
@@ -53,6 +64,32 @@ class Home extends React.Component {
       console.error(error);
   });
  }
+
+ handleGenres = genreChange => {
+  var string = ""
+  var finalGenres = []
+  
+  if(genreChange != null)
+  {
+    if(genreChange.length >= 3)
+    {
+      alert(genreChange.length)
+      for(var i = genreChange.length - 3; i < genreChange.length; i++)
+      {
+        finalGenres.push(genreChange[i]['value'])
+      }
+      alert(finalGenres)
+    }
+  }
+
+  
+  /*for(var i = 0; i < genreChange.length; i++)
+  {
+    string += (newCountry[i]['label'] + ", ")
+  }
+  alert(string)*/
+
+};
 
   render()
   {  
@@ -80,6 +117,14 @@ class Home extends React.Component {
             <input required type="password" name="rawPassword" placeholder="enter a password"></input>
             
             <br></br>
+            <div className="row">
+          <div className="col-md-3"></div>
+          <div className="col-md-6">
+            <Select options={genres} onChange={this.handleGenres} components={animatedComponents}
+              isMulti />
+          </div>
+          <div className="col-md-4"></div>
+        </div>
             <label for="genres">Choose three Genres:</label>
             <br></br>
               <select name="genres" id="genres" multiple>
