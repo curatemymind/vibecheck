@@ -4,14 +4,15 @@ import './vibecheck.css';
 import * as serviceWorker from './serviceWorker';
 import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
 import Home from './pages/Home'
+import App from './pages/App'
 
-
+  
 /*using react router we set a constant equal to whatever component
 we would like to render*/
 const routing = (
   <Router>
     <Switch>
-      <Route exact path="/" component={Home}/>  
+      <Route exact path="/" component={App}/>  
     </Switch>
   </Router>
 )
