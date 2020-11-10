@@ -7,6 +7,8 @@ import sys
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import bcrypt
+import random
+import time
 
 #connection string to RDS. This is preferred because it lets you pass in the
 #database argument rather than having to select it first, more condensed
@@ -112,9 +114,12 @@ def user():
     #correctPassword = bcrypt.checkpw(rawPassword.encode('utf-8'), user['rawPassword'])
     #hashedPassword = bcrypt.hashpw(rawPassword, bcrypt.gensalt())
     print(hashedPassword)
+    userid = random.randint(1,238497248579435945392751)*2
+    print(userid)
+
     genres = request.form.getlist('genres')
     artists = request.form.getlist('artists')
-    return Response(200, [firstname, lastname, email, hashedPassword, genres, artists], "this argument is bad data").serialize()
+    return Response(200, [userid, firstname, lastname, email, hashedPassword, genres, artists]).serialize()
 
 
 #spotify implementation
