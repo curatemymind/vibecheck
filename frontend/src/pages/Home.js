@@ -4,7 +4,6 @@ import { Redirect } from "react-router-dom";
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 
-
 const genres = []
 const animatedComponents = makeAnimated();
 class Home extends React.Component { 
@@ -109,23 +108,33 @@ class Home extends React.Component {
     
     return (
       <div>
-        {this.state.recArtists}
-        <h1>{this.state.data}</h1>
+        {/* {this.state.recArtists} 
+        <h1>{this.state.data}</h1>  */}
+
         <form action = 'http://localhost:5000/user' method = 'POST'>
-            <br></br>
-            <input required type="email" name="email" placeholder="enter an email address"></input>
-            <input required type="password" name="rawPassword" placeholder="enter a password"></input>
-            
-            <br></br>
-            <div className="row">
+           
+            {/* <div className="row"> */}
           <div className="col-md-3"></div>
           <div className="col-md-6">
+          <br></br>
+            <input required type="name" name="firstname" placeholder="First Name"></input>
+            <br></br>
+            <br></br>
+            <input required type="name" name="lastname" placeholder="Last Name"></input>
+            <br></br>
+            <br></br>
+            <input required type="email" name="email" placeholder="E-mail"></input>
+            <br></br>
+            <br></br>
+            <input required type="password" name="rawPassword" placeholder="Password"></input>
+            <br></br>
+            <br></br>
             <Select options={genres} onChange={this.handleGenres} components={animatedComponents}
               isMulti />
-          </div>
+          {/* </div> */}
           <div className="col-md-4"></div>
         </div>
-            <label for="genres">Choose three Genres:</label>
+            {/* <label for="genres">Choose three Genres:</label>
             <br></br>
               <select name="genres" id="genres" multiple>
                 {this.items}
@@ -138,7 +147,7 @@ class Home extends React.Component {
               </select>
               <br></br>
 
-          <button type="submit">Sign Up</button>
+          <button type="submit">Sign Up</button> */}
         </form>
       </div>
     )        
