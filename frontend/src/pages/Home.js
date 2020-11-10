@@ -3,7 +3,7 @@ import '../vibecheck.css';
 import { Redirect } from "react-router-dom";
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-
+ 
 const genres = []
 const animatedComponents = makeAnimated();
 class Home extends React.Component { 
@@ -131,6 +131,10 @@ class Home extends React.Component {
             <br></br>
             <Select options={genres} onChange={this.handleGenres} components={animatedComponents}
               isMulti />
+<br></br>
+            <br></br>
+<button type="submit">Sign Up</button> 
+
           {/* </div> */}
           <div className="col-md-4"></div>
         </div>
@@ -146,8 +150,8 @@ class Home extends React.Component {
                 {this.artists}
               </select>
               <br></br>
-
-          <button type="submit">Sign Up</button> */}
+*/}
+            
         </form>
       </div>
     )        

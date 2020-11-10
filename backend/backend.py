@@ -6,6 +6,7 @@ import os
 import sys
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+import bcrypt
 
 #connection string to RDS. This is preferred because it lets you pass in the
 #database argument rather than having to select it first, more condensed
@@ -29,6 +30,7 @@ print(cursor.fetchall())
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+app.secret_key = 'mysecret'
 
 class Response:
     def __init__(self, code, data, *args):
@@ -98,11 +100,21 @@ def data():
 def user():
   if request.method == 'POST': 
     document = request.form.to_dict()
+    firstname = document['firstname']
+    lastname = document['lastname']
     email = document['email']
-    rawPassword = document['rawPassword']
+
+    rawPassword = document['rawPassword'].encode('utf-8')
+
+    hashedPassword = bcrypt.hashpw(rawPassword, bcrypt.gensalt())
+    
+    #rawPassword.encode('utf-8')
+    #correctPassword = bcrypt.checkpw(rawPassword.encode('utf-8'), user['rawPassword'])
+    #hashedPassword = bcrypt.hashpw(rawPassword, bcrypt.gensalt())
+    print(hashedPassword)
     genres = request.form.getlist('genres')
     artists = request.form.getlist('artists')
-  return Response(200, [email, rawPassword, genres, artists]).serialize()
+    return Response(200, [firstname, lastname, email, hashedPassword, genres, artists], "this argument is bad data").serialize()
 
 
 #spotify implementation
