@@ -3,10 +3,30 @@ import '../vibecheck.css';
 import { Redirect } from "react-router-dom";
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
- 
+import './loginsignup.css';
+
 const genres = []
 const animatedComponents = makeAnimated();
-class Home extends React.Component { 
+class Home extends React.Component {
+
+
+//   <Select options={genres} onChange={this.handleGenres} components={animatedComponents} isMulti />
+
+//   <div className="col-md-4"></div>
+// </div>
+//   <label for="genres">Choose three Genres:</label>
+//    <br></br>
+//      <select name="genres" id="genres" multiple>
+//        {this.items}
+//      </select>
+//      <br></br>
+//      <label for="artists">Choose three artists:</label>
+//      <br></br>
+//      <select name="artists" id="artists" multiple>
+//        {this.artists}
+//      </select>
+//      <br></br>
+// </div>
 
   //the states of emotion and source will be set to null initially until the user had filled out the form.
   constructor() {
@@ -16,145 +36,135 @@ class Home extends React.Component {
       genres: null,
       recArtists: null,
     };
-  }
+  } 
 
- componentDidMount() {
-  const axios = require('axios');
-  axios.get(`http://localhost:5000/data`)
+  componentDidMount() {
+    const axios = require('axios');
+    axios.get(`http://localhost:5000/data`)
       .then((response) => {
-          this.setState({
-              data: (JSON.stringify(response.data.data))
-          });
+        this.setState({
+          data: (JSON.stringify(response.data.data))
+        });
       }).catch((error) => {
-          alert("There was an error connecting to the api")
-          console.error(error);
-      }); 
-  
-  axios.get(`http://localhost:5000/allGenres`)
-  .then((response) => {
-    
-      for(var i = 0; i < response.data.data.genres.length; i++)
-      {
-        genres.push({label: response.data.data.genres[i], value: response.data.data.genres[i]})
-      }
-      
-      this.setState({
+        alert("There was an error connecting to the api")
+        console.error(error);
+      });
+
+    axios.get(`http://localhost:5000/allGenres`)
+      .then((response) => {
+
+        for (var i = 0; i < response.data.data.genres.length; i++) {
+          genres.push({ label: response.data.data.genres[i], value: response.data.data.genres[i] })
+        }
+
+        this.setState({
           genres: response.data.data.genres
+        });
+      }).catch((error) => {
+        alert("There was an error connecting to the api")
+        console.error(error);
       });
-  }).catch((error) => {
-      alert("There was an error connecting to the api")
-      console.error(error);
-  });
 
-  axios.get(`http://localhost:5000/recommendations`)
-  .then((response) => {
-    var length = (response.data.data.tracks.length)
-    
-    var tempArr = []
-    for(var i = 0; i < length; i++)
-    {
-      tempArr.push(response.data.data.tracks[i].artists[0].name)
-    }
-      this.setState({
+    axios.get(`http://localhost:5000/recommendations`)
+      .then((response) => {
+        var length = (response.data.data.tracks.length)
+
+        var tempArr = []
+        for (var i = 0; i < length; i++) {
+          tempArr.push(response.data.data.tracks[i].artists[0].name)
+        }
+        this.setState({
           recArtists: tempArr
+        });
+      }).catch((error) => {
+        alert("There was an error connecting to the api")
+        console.error(error);
       });
-  }).catch((error) => {
-      alert("There was an error connecting to the api")
-      console.error(error);
-  });
- }
+  }
 
- handleGenres = genreChange => {
-  var string = ""
-  var finalGenres = []
-  
-  if(genreChange != null)
-  {
-    if(genreChange.length >= 3)
-    {
-      alert(genreChange.length)
-      for(var i = genreChange.length - 3; i < genreChange.length; i++)
-      {
-        finalGenres.push(genreChange[i]['value'])
+  handleGenres = genreChange => {
+    var string = ""
+    var finalGenres = []
+
+    if (genreChange != null) {
+      if (genreChange.length >= 3) {
+        alert(genreChange.length)
+        for (var i = genreChange.length - 3; i < genreChange.length; i++) {
+          finalGenres.push(genreChange[i]['value'])
+        }
+        alert(finalGenres)
       }
-      alert(finalGenres)
     }
-  }
+  };
 
-  
-  /*for(var i = 0; i < genreChange.length; i++)
-  {
-    string += (newCountry[i]['label'] + ", ")
-  }
-  alert(string)*/
-
-};
-
-  render()
-  {  
-    if(this.state.genres != null)
-    {
+  render() {
+    if (this.state.genres != null) {
       this.items = this.state.genres.map((item, key) =>
         <option name={item} key={key}>{item}</option>
-      ); 
+      );
     }
 
-    if(this.state.recArtists != null)
-    {
+    if (this.state.recArtists != null) {
       this.artists = this.state.recArtists.map((item, key) =>
         <option name={item} key={key}>{item}</option>
-      ); 
+      );
     }
-    
+
     return (
-      <div>
-        {/* {this.state.recArtists} 
-        <h1>{this.state.data}</h1>  */}
-
-        <form action = 'http://localhost:5000/user' method = 'POST'>
-           
-            {/* <div className="row"> */}
-          <div className="col-md-3"></div>
-          <div className="col-md-6">
-          <br></br>
-            <input required type="name" name="firstname" placeholder="First Name"></input>
-            <br></br>
-            <br></br>
-            <input required type="name" name="lastname" placeholder="Last Name"></input>
-            <br></br>
-            <br></br>
-            <input required type="email" name="email" placeholder="E-mail"></input>
-            <br></br>
-            <br></br>
-            <input required type="password" name="rawPassword" placeholder="Password"></input>
-            <br></br>
-            <br></br>
-            <Select options={genres} onChange={this.handleGenres} components={animatedComponents}
-              isMulti />
-<br></br>
-            <br></br>
-<button type="submit">Sign Up</button> 
-
-          {/* </div> */}
-          <div className="col-md-4"></div>
+      <form action='http://localhost:5000/user' method='POST'>
+        <div class="login-wrap">
+          <div class="login-html">
+            <h1>Vibecheck</h1>
+            <input id="tab-1" type="radio" name="tab" class="sign-in" />
+            <label for="tab-1" class="tab">Sign In</label>
+            <input id="tab-2" type="radio" name="tab" class="sign-up" />
+            <label for="tab-2" class="tab">Sign Up</label>
+            <div class="login-form">
+              <div class="sign-in-htm">
+                <div class="group">
+                  <label for="user" class="label">Username</label>
+                  <input id="user" type="text" class="input" />
+                </div>
+                <div class="group">
+                  <label for="pass" class="label">Password</label>
+                  <input id="pass" type="password" class="input" data-type="password" />
+                </div>
+                <div class="group">
+                  <input id="check" type="checkbox" class="check" checked />
+                  <label for="check"><span class="icon"></span> Keep me Signed in</label>
+                </div>
+                <div class="group">
+                  <input type="submit" class="button" value="Sign In" />
+                </div>
+              </div>
+              <div class="sign-up-htm">
+                <div class="group">
+                  <label for="user" class="label">First Name</label>
+                  <input required placeholder="First Name" name="firstname" id="user" type="text" class="input" />
+                </div>
+                <div class="group">
+                  <label for="user" class="label">Last Name</label>
+                  <input required placeholder="Last Name" name="lastname" id="user" type="text" class="input" />
+                </div>
+                <div class="group">
+                  <label for="pass" class="label">Password</label>
+                  <input required id="pass" placeholder="Password" name="rawPassword" type="password" class="input" data-type="password" />
+                </div>
+                <div class="group">
+                </div>
+                <div class="group">
+                  <label for="pass" class="label">Email Address</label>
+                  <input id="pass" name="email" placeholder="E-mail Address" type="text" class="input" />
+                </div>
+                <div class="group">
+                  <input type="submit" class="button" value="Sign Up" />
+                </div>
+              </div>
+            </div> 
+          </div>
         </div>
-            {/* <label for="genres">Choose three Genres:</label>
-            <br></br>
-              <select name="genres" id="genres" multiple>
-                {this.items}
-              </select>
-              <br></br>
-              <label for="artists">Choose three artists:</label>
-              <br></br>
-              <select name="artists" id="artists" multiple>
-                {this.artists}
-              </select>
-              <br></br>
-*/}
-            
-        </form>
-      </div>
-    )        
+      </form>
+    )
   }
 }
 export default Home;

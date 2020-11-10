@@ -22,6 +22,7 @@ cursor.execute("CREATE TABLE Requests( userid INT, movieid INT, FOREIGN KEY (use
 cursor.execute("CREATE TABLE Creates( userid INT NOT NULL, playlistid INT NOT NULL, PRIMARY KEY(playlistid), FOREIGN KEY (userid) REFERENCES User (userid), FOREIGN KEY (playlistid) REFERENCES Playlist (playlistid))")
 cursor.execute("CREATE TABLE Consists( songid INT NOT NULL, playlistid INT NOT NULL, PRIMARY KEY(songid), FOREIGN KEY (songid) REFERENCES Song (songid), FOREIGN KEY (playlistid) REFERENCES Playlist (playlistid))")
 
+
 #this command pulls all the tables from the current db and prints them
 sql = '''show tables'''
 cursor.execute(sql)

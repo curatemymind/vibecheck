@@ -9,6 +9,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import bcrypt
 import random
 import time
+import pymysql
 
 #connection string to RDS. This is preferred because it lets you pass in the
 #database argument rather than having to select it first, more condensed
@@ -16,7 +17,7 @@ db = pymysql.connect(
   host="vibecheckdb.cfmab8sxzhn7.us-east-2.rds.amazonaws.com",
   user="admin",
   password="rootroot",
-  database="testing"
+  database="final"
 )
 
 os.environ["SPOTIPY_CLIENT_ID"] = "63e7b7530d13411f9e292730a6ed552e"
@@ -25,9 +26,9 @@ os.environ["SPOTIPY_CLIENT_SECRET"] = "4893989706694f2489d4a44f160089c1"
 cursor = db.cursor()
 spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
 
-sql = '''show tables'''
-cursor.execute(sql)
-print(cursor.fetchall())
+# sql = '''show tables'''
+# cursor.execute(sql)
+# print(cursor.fetchall())
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -106,6 +107,7 @@ def user():
     lastname = document['lastname']
     email = document['email']
 
+    p = document['rawPassword']
     rawPassword = document['rawPassword'].encode('utf-8')
 
     hashedPassword = bcrypt.hashpw(rawPassword, bcrypt.gensalt())
@@ -114,12 +116,26 @@ def user():
     #correctPassword = bcrypt.checkpw(rawPassword.encode('utf-8'), user['rawPassword'])
     #hashedPassword = bcrypt.hashpw(rawPassword, bcrypt.gensalt())
     print(hashedPassword)
-    userid = random.randint(1,238497248579435945392751)*2
+    userid = random.randint(1,2384972485794359453925751)*2
     print(userid)
 
     genres = request.form.getlist('genres')
     artists = request.form.getlist('artists')
-    return Response(200, [userid, firstname, lastname, email, hashedPassword, genres, artists]).serialize()
+
+    
+    # db = pymysql.connect('vibecheckdb.cfmab8sxzhn7.us-east-2.rds.amazonaws.com', 'admin', 'rootroot')
+
+    # cursor = db.cursor() 
+
+    #this create table command creates a table
+    sql = "INSERT INTO User ( userid, first_name, last_name, email, password) VALUES (%s,%s,%s,%s, %s)"
+    val = (userid,firstname,lastname,email,p)
+    cursor.execute(sql, val)
+    db.commit()
+
+    #cursor.execute("INSERT INTO User (userid, first_name, last_name, email, password) VALUES (1,lexie,webel,hi@g.com,1234);")
+ 
+    return Response(200, [userid, firstname, lastname, email, p, hashedPassword, genres, artists]).serialize()
 
 
 #spotify implementation
