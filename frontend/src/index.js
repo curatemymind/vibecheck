@@ -6,7 +6,8 @@ import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
 import Home from './pages/Home'
 import App from './pages/App'
 
-  
+import Playlist from './pages/Playlist'
+
 /*using react router we set a constant equal to whatever component
 we would like to render*/
 const routing = (
@@ -14,6 +15,8 @@ const routing = (
     <Switch>
       <Route exact path="/" component={Home}/> 
       <Route exact path="/test" component={App}/>  
+      <Route exact path="/playlist" component={Playlist}/>  
+
     </Switch>
   </Router>
 )

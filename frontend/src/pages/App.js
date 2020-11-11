@@ -5,14 +5,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 const animatedComponents = makeAnimated();
 
-const Countries = [
-  { label: "Albania", value: 355 },
-  { label: "Argentina", value: 54 },
-  { label: "Austria", value: 43 },
-  { label: "Cocos Islands", value: 61 },
-  { label: "Kuwait", value: 965 },
-  { label: "Sweden", value: 46 },
-  { label: "Venezuela", value: 58 }
+const Vibes = [
+  { label: "Funky", value: 355 },
+  { label: "Happy", value: 54 },
+  { label: "Sad", value: 43 },
+  { label: "Chill", value: 61 },
+  { label: "Flirty", value: 965 },
+  { label: "Study", value: 46 },
+  { label: "Workout", value: 58 },
+  { label: "Nostalgic", value: 528 }
 ];
 
 
@@ -22,24 +23,14 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      countries: []
+      vibes: []
       
     }
   }
   
-  handleCountry = newCountry => {
-    var string = ""
-    
-    for(var i = 0; i < newCountry.length; i++)
-    {
-      string += (newCountry[i]['label'] + ", ")
-    }
-    alert(string)
-  
+  handleVibe= newVibe => {
+    alert(newVibe['label'])
   };
-
-
-
 
   render() {
     return (
@@ -47,8 +38,8 @@ class App extends Component {
         <div className="row">
           <div className="col-md-3"></div>
           <div className="col-md-6">
-            <Select options={Countries} onChange={this.handleCountry} components={animatedComponents}
-              isMulti />
+            <Select options={Vibes} onChange={this.handleVibe} components={animatedComponents}
+               />
           </div>
           <div className="col-md-4"></div>
         </div>

@@ -107,6 +107,9 @@ def user():
     lastname = document['lastname']
     email = document['email']
 
+    #sign in username + password
+    siun = document['siun']
+    sipw = document['sipw']
     p = document['rawPassword']
     rawPassword = document['rawPassword'].encode('utf-8')
 
@@ -115,27 +118,34 @@ def user():
     #rawPassword.encode('utf-8')
     #correctPassword = bcrypt.checkpw(rawPassword.encode('utf-8'), user['rawPassword'])
     #hashedPassword = bcrypt.hashpw(rawPassword, bcrypt.gensalt())
-    print(hashedPassword)
-    userid = random.randint(1,2384972485794359453925751)*2
-    print(userid)
+    userid = random.randint(1,100)*2
 
     genres = request.form.getlist('genres')
     artists = request.form.getlist('artists')
+     
+    if(email == ""):
+      #this create table command creates a table
+      sql = "SELECT email,password FROM User2 WHERE email=%s AND password =%s"
+      val = (siun,sipw)
+      print(cursor.execute(sql, val))
+      if(cursor.execute(sql, val)):
+        print("login exists")
+      else:
+        print("Incorrect info")
+    else:
+      #this create table command creates a table
+      sql = "SELECT email FROM User2 WHERE email=%s"
+      val = (email)
+      if(cursor.execute(sql, val)):
+        #alert here  
+        print("u already have an account")
+      else:
+        sql = "INSERT INTO User2 ( userid, first_name, last_name, email, password) VALUES (%s,%s,%s,%s, %s)"
+        val = (userid,firstname,lastname,email,rawPassword)
+        cursor.execute(sql, val)
+        db.commit()
 
-    
-    # db = pymysql.connect('vibecheckdb.cfmab8sxzhn7.us-east-2.rds.amazonaws.com', 'admin', 'rootroot')
-
-    # cursor = db.cursor() 
-
-    #this create table command creates a table
-    sql = "INSERT INTO User ( userid, first_name, last_name, email, password) VALUES (%s,%s,%s,%s, %s)"
-    val = (userid,firstname,lastname,email,p)
-    cursor.execute(sql, val)
-    db.commit()
-
-    #cursor.execute("INSERT INTO User (userid, first_name, last_name, email, password) VALUES (1,lexie,webel,hi@g.com,1234);")
- 
-    return Response(200, [userid, firstname, lastname, email, p, hashedPassword, genres, artists]).serialize()
+    return Response(200, [siun, sipw, userid, firstname, lastname, email, p, hashedPassword, genres, artists]).serialize()
 
 
 #spotify implementation

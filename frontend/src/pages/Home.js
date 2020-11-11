@@ -10,23 +10,23 @@ const animatedComponents = makeAnimated();
 class Home extends React.Component {
 
 
-//   <Select options={genres} onChange={this.handleGenres} components={animatedComponents} isMulti />
+  //   <Select options={genres} onChange={this.handleGenres} components={animatedComponents} isMulti />
 
-//   <div className="col-md-4"></div>
-// </div>
-//   <label for="genres">Choose three Genres:</label>
-//    <br></br>
-//      <select name="genres" id="genres" multiple>
-//        {this.items}
-//      </select>
-//      <br></br>
-//      <label for="artists">Choose three artists:</label>
-//      <br></br>
-//      <select name="artists" id="artists" multiple>
-//        {this.artists}
-//      </select>
-//      <br></br>
-// </div>
+  //   <div className="col-md-4"></div>
+  // </div>
+  //   <label for="genres">Choose three Genres:</label>
+  //    <br></br>
+  //      <select name="genres" id="genres" multiple>
+  //        {this.items}
+  //      </select>
+  //      <br></br>
+  //      <label for="artists">Choose three artists:</label>
+  //      <br></br>
+  //      <select name="artists" id="artists" multiple>
+  //        {this.artists}
+  //      </select>
+  //      <br></br>
+  // </div>
 
   //the states of emotion and source will be set to null initially until the user had filled out the form.
   constructor() {
@@ -36,7 +36,7 @@ class Home extends React.Component {
       genres: null,
       recArtists: null,
     };
-  } 
+  }
 
   componentDidMount() {
     const axios = require('axios');
@@ -123,15 +123,11 @@ class Home extends React.Component {
               <div class="sign-in-htm">
                 <div class="group">
                   <label for="user" class="label">Username</label>
-                  <input id="user" type="text" class="input" />
+                  <input   placeholder="E-mail Address" name="siun" id="user" type="text" class="input" />
                 </div>
                 <div class="group">
                   <label for="pass" class="label">Password</label>
-                  <input id="pass" type="password" class="input" data-type="password" />
-                </div>
-                <div class="group">
-                  <input id="check" type="checkbox" class="check" checked />
-                  <label for="check"><span class="icon"></span> Keep me Signed in</label>
+                  <input   placeholder="Password" name="sipw" id="user" type="password" class="input" />
                 </div>
                 <div class="group">
                   <input type="submit" class="button" value="Sign In" />
@@ -140,15 +136,15 @@ class Home extends React.Component {
               <div class="sign-up-htm">
                 <div class="group">
                   <label for="user" class="label">First Name</label>
-                  <input required placeholder="First Name" name="firstname" id="user" type="text" class="input" />
+                  <input   placeholder="First Name" name="firstname" id="user" type="text" class="input" />
                 </div>
                 <div class="group">
                   <label for="user" class="label">Last Name</label>
-                  <input required placeholder="Last Name" name="lastname" id="user" type="text" class="input" />
+                  <input   placeholder="Last Name" name="lastname" id="user" type="text" class="input" />
                 </div>
                 <div class="group">
                   <label for="pass" class="label">Password</label>
-                  <input required id="pass" placeholder="Password" name="rawPassword" type="password" class="input" data-type="password" />
+                  <input   id="pass" placeholder="Password" name="rawPassword" type="password" class="input" data-type="password" />
                 </div>
                 <div class="group">
                 </div>
@@ -160,7 +156,7 @@ class Home extends React.Component {
                   <input type="submit" class="button" value="Sign Up" />
                 </div>
               </div>
-            </div> 
+            </div>
           </div>
         </div>
       </form>
