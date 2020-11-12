@@ -170,10 +170,22 @@ def all_genres():
   results = spotify.recommendation_genre_seeds()
   return Response(200, results).serialize()
 
-@app.route('/recommendations')
+@app.route('/recommendations', methods=['GET', 'POST'])
 def rec():
-  results = spotify.recommendations(None, ['alternative'])
-  return Response(200, results).serialize()
+  if request.method == 'GET':
+    results = spotify.recommendations(None, ['alternative'])
+    return Response(200, results).serialize()
+  elif request.method == 'POST':
+    genreSeeds = request.args.getlist('finalGenres[]')
+    results = spotify.recommendations(None, genreSeeds, seed_tracks=None, limit=30)
+    return Response(200, results).serialize()
+
+
+@app.route('/newPlaylist', methods=['POST'])
+def newPlaylist():
+  document = request.form.to_dict()
+  
+  return Response(200, document).serialize()
 
 @app.route('/allArtists')
 def all_artists():
