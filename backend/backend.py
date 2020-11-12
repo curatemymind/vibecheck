@@ -177,14 +177,15 @@ def rec():
     return Response(200, results).serialize()
   elif request.method == 'POST':
     genreSeeds = request.args.getlist('finalGenres[]')
-    results = spotify.recommendations(None, genreSeeds, seed_tracks=None, limit=30)
+    results = spotify.recommendations(None, genreSeeds, seed_tracks=None, limit=10)
     return Response(200, results).serialize()
 
+#NOTE THAT IT RETURNS MERGED RESULTS
 
 @app.route('/newPlaylist', methods=['POST'])
 def newPlaylist():
-  document = request.form.to_dict()
-  
+  document = request.args.getlist('dataToSend[]')
+  print(document)
   return Response(200, document).serialize()
 
 @app.route('/allArtists')

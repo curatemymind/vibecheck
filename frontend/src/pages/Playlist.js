@@ -27,10 +27,14 @@ class Playlist extends React.Component {
     super();
     this.state = {
         data: null,
-        genres: null,
+        genresSelected: null,
         recArtists: null,
-        vibe: "Funky"
+        vibe: "Funky",
+        chosenArtists: null,
+        change: false,
+        arrLen: 0,
       };
+      this.submit = this.submit.bind(this);
   }
 
   componentDidMount() {
@@ -58,18 +62,62 @@ class Playlist extends React.Component {
     this.setState({vibe: newVibe['label']})
   };
 
+  handleArtists = chosenArtists => {
+    //handles updating the state for vibe
+    if(chosenArtists != null)
+    {
+      var tempArray = []
+
+      for(var i = 0; i < chosenArtists.length; i++)
+      {
+        tempArray.push(chosenArtists[i]['label'])
+      }
+      this.setState({chosenArtists: tempArray})
+    }
+    else{this.setState({chosenArtists: null})}
+  };
+
   //creates a k,v pair list for artists from a certaini genre that will be fed into react-select
   handleGenres = genreChange => {
     var string = ""
     var finalGenres = []
 
+
     if (genreChange != null) {
-      if (genreChange.length >= 3) {
-        if(genreChange.length === 3) {
+      
+      var tempArray = []
+
+      for(var i = 0; i < genreChange.length; i++)
+      {
+        tempArray.push(genreChange[i]['label'])
+      }
+      this.setState({genresSelected: tempArray})
+
+      if(this.state.change === true){this.setState({change: false})}
+      else{this.setState({change: true})}
+
+       
+      if (genreChange.length >= 1) {
           //ensures only three genres are sent over as seeds
-          for (var i = genreChange.length - 3; i < genreChange.length; i++) {
-            finalGenres.push(genreChange[i]['value'])
+          if(genreChange.length <= this.state.arrLen)
+          {
+            var temp = this.state.arrLen - 1
+            for(var b = 0; b < 10; b++)
+            {
+              recommended.pop()
+              
+            }
+            //alert(recommended.length)
+            this.setState({arrLen: temp})
           }
+          else 
+          {
+            var temp = this.state.arrLen + 1
+            this.setState({arrLen: temp})
+          }
+          
+          finalGenres.push(genreChange[genreChange.length - 1]['value'])
+          
           //a custom axios post request to ensure data is sent over...
           //in this case, data is sent in params attribute
           const request = axios({
@@ -79,39 +127,58 @@ class Playlist extends React.Component {
             method: 'post',
             url: `http://localhost:5000/recommendations`,
             params: {
-            finalGenres
+              finalGenres
             }
           })
           .then((response) => {
             var length = (response.data.data.tracks.length)
-            for (var i = 0; i < recommended.length; i++) {
-              recommended.pop()
-            }
             for (var i = 0; i < length; i++) {
+              console.log(response.data.data.tracks[i].artists[0].name)
               recommended.push({label: response.data.data.tracks[i].artists[0].name, value: response.data.data.tracks[i].artists[0].name})
             }
+            //alert(recommended.length)
           }).catch((error) => {
             alert("There was an error connecting to the api")
             console.error(error);
           });
-        }
-        else {
-          alert("You must ONLY have three genres.")
-        }
+        
       }
     }
+    else{this.setState({genresSelected: null})}
   };
 
   submit = function (e) {
-    alert('it works!');
-    alert("hello")
+
+    var dataToSend = [this.state.vibe, this.state.genresSelected, this.state.chosenArtists]
+    const request = axios({
+      headers: {
+      'content-type': 'application/json'
+      },
+      method: 'post',
+      url: `http://localhost:5000/newPlaylist`,
+      params: {
+        dataToSend
+      }
+    })
+    /*alert(this.state.vibe)
+    alert(this.state.genresSelected)
+    alert(this.state.chosenArtists)
+    alert("hey")*/
+    alert("Since we did a manual post request with the data contained in the states, we need to manually redirect to the next page. The output will be in the python terminal.")
     e.preventDefault();
+    
   }
 
   render() 
     {
       return (
         <div>
+          <h1>this is used to validate states are updating properly</h1>
+          <h2>Vibe: {this.state.vibe}</h2>
+          <h2>Genres Selected [{this.state.arrLen}]: {this.state.genresSelected}</h2>
+
+          <h2>Artists: {this.state.chosenArtists}</h2>
+          
           <form action='http://localhost:5000/newPlaylist' method='POST' onSubmit={this.submit}>
             <div className="container">
               <div className="row">
@@ -124,8 +191,10 @@ class Playlist extends React.Component {
                   <Select options={genres} onChange={this.handleGenres} components={animatedComponents} isMulti />
                   <br></br>
                   <h1>Select Artists</h1>
-                  <Select options={recommended} components={animatedComponents} isMulti />
+                  {this.state.change === true && <Select options={recommended} onChange={this.handleArtists} components={animatedComponents} isMulti />}
+                  {this.state.change === false && <Select options={recommended} onChange={this.handleArtists} components={animatedComponents} isMulti />}
                   <br></br>
+                
                   <input type="submit" class="button" value="Sign Up" />
                 </div>
               </div>
