@@ -176,6 +176,7 @@ def all_genres():
 
 @app.route('/lexie')
 def lexie():
+  #ALL WE NEED TO DO IS PASS THE GENRE1, GENRE2, GENRE3, ID1,ID2, ID3
   res = []
   #get ids for all three playlists (corresponding with each artist + vibe)
   response1 = spotify.playlist("0RVjFnEY7zzHWtQzOG4wKB")
@@ -187,6 +188,7 @@ def lexie():
     innerRes1.append(response1['tracks']['items'][i]['track']['name'])
     innerRes1.append(response1['tracks']['items'][i]['track']['duration_ms'])
     innerRes1.append(response1['tracks']['items'][i]['track']['artists'][0]['name'])
+    innerRes1.append("genre 1")
     res.append(innerRes1)
 
   for i in range(5):
@@ -194,6 +196,7 @@ def lexie():
     innerRes2.append(response2['tracks']['items'][i]['track']['name'])
     innerRes2.append(response2['tracks']['items'][i]['track']['duration_ms'])
     innerRes2.append(response2['tracks']['items'][i]['track']['artists'][0]['name'])
+    innerRes2.append("genre 2")
     res.append(innerRes2)
 
   for i in range(5):
@@ -201,23 +204,23 @@ def lexie():
     innerRes3.append(response3['tracks']['items'][i]['track']['name'])
     innerRes3.append(response3['tracks']['items'][i]['track']['duration_ms'])
     innerRes3.append(response3['tracks']['items'][i]['track']['artists'][0]['name'])
+    innerRes3.append("genre 3")
     res.append(innerRes3)
 
-
-  # for i in range(5):
-  #   #innerRes = (response['tracks']['items'][i]['track']['name'], response['tracks']['items'][i]['track']['duration_ms'])
-  #   innerRes = []
-  #   innerRes.append(response['tracks']['items'][i]['track']['name'])
-  #   innerRes.append(response['tracks']['items'][i]['track']['duration_ms'])
-  #   innerRes.append(response['tracks']['items'][i]['track']['artists'][0]['name'])
-  #   res.append(innerRes)
   count = 0
   for val in res:
-     sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre) VALUES (%s,%s,%s,%s, %s)"
-     val = (count,val[0], val[2],val[1],"genre")
-     cursor.execute(sql, val)
-     db.commit()
-     count += 1
+    sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre) VALUES (%s,%s,%s,%s, %s)"
+    val[1] = int(val[1])
+    seconds=(val[1]/1000)%60
+    seconds = int(seconds)
+    minutes=(val[1]/(1000*60))%60
+    minutes = int(minutes)
+    hours=(val[1]/(1000*60*60))%2
+    val[1] = "%d:%d:%d" % (hours, minutes, seconds)
+    val = (count,val[0], val[2],val[1],val[3])
+    cursor.execute(sql, val)
+    db.commit()
+    count += 1
 
   return Response(200, res).serialize()
 
