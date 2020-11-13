@@ -177,20 +177,48 @@ def all_genres():
 @app.route('/lexie')
 def lexie():
   res = []
-  
-  
-  response = spotify.playlist("0RVjFnEY7zzHWtQzOG4wKB")
-  #print(response['tracks']['items'][5]['track']['name'])
+  #get ids for all three playlists (corresponding with each artist + vibe)
+  response1 = spotify.playlist("0RVjFnEY7zzHWtQzOG4wKB")
+  response2 = spotify.playlist("3Kmqb5j2x9qfYDXjSzlmbi")
+  response3 = spotify.playlist("1etBZAb8BFmHtiCx1eFDSz")
+
   for i in range(5):
-    #innerRes = (response['tracks']['items'][i]['track']['name'], response['tracks']['items'][i]['track']['duration_ms'])
-    innerRes = []
-    innerRes.append(response['tracks']['items'][i]['track']['name'])
-    innerRes.append(response['tracks']['items'][i]['track']['duration_ms'])
-    innerRes.append(response['tracks']['items'][i]['track']['artists'][0]['name'])
-    res.append(innerRes)
+    innerRes1 = []
+    innerRes1.append(response1['tracks']['items'][i]['track']['name'])
+    innerRes1.append(response1['tracks']['items'][i]['track']['duration_ms'])
+    innerRes1.append(response1['tracks']['items'][i]['track']['artists'][0]['name'])
+    res.append(innerRes1)
+
+  for i in range(5):
+    innerRes2 = []
+    innerRes2.append(response2['tracks']['items'][i]['track']['name'])
+    innerRes2.append(response2['tracks']['items'][i]['track']['duration_ms'])
+    innerRes2.append(response2['tracks']['items'][i]['track']['artists'][0]['name'])
+    res.append(innerRes2)
+
+  for i in range(5):
+    innerRes3 = []
+    innerRes3.append(response3['tracks']['items'][i]['track']['name'])
+    innerRes3.append(response3['tracks']['items'][i]['track']['duration_ms'])
+    innerRes3.append(response3['tracks']['items'][i]['track']['artists'][0]['name'])
+    res.append(innerRes3)
 
 
-  #res = innerRes + outterRes 
+  # for i in range(5):
+  #   #innerRes = (response['tracks']['items'][i]['track']['name'], response['tracks']['items'][i]['track']['duration_ms'])
+  #   innerRes = []
+  #   innerRes.append(response['tracks']['items'][i]['track']['name'])
+  #   innerRes.append(response['tracks']['items'][i]['track']['duration_ms'])
+  #   innerRes.append(response['tracks']['items'][i]['track']['artists'][0]['name'])
+  #   res.append(innerRes)
+  count = 0
+  for val in res:
+     sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre) VALUES (%s,%s,%s,%s, %s)"
+     val = (count,val[0], val[2],val[1],"genre")
+     cursor.execute(sql, val)
+     db.commit()
+     count += 1
+
   return Response(200, res).serialize()
 
 
