@@ -10,6 +10,8 @@ import bcrypt
 import random
 import time
 import pymysql
+import json 
+import requests 
 
 #connection string to RDS. This is preferred because it lets you pass in the
 #database argument rather than having to select it first, more condensed
@@ -25,6 +27,7 @@ os.environ["SPOTIPY_CLIENT_SECRET"] = "4893989706694f2489d4a44f160089c1"
 #sets cursor
 cursor = db.cursor()
 spotify = spotipy.Spotify(client_credentials_manager=SpotifyClientCredentials())
+print(spotify)
 
 # sql = '''show tables'''
 # cursor.execute(sql)
@@ -154,7 +157,7 @@ def user():
 #secret: 4893989706694f2489d4a44f160089c1
 @app.route('/testspotify')
 def test_spotify():
-  lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
+  lz_uri = 'spotify:artist:3TVXtAsR1Inumwj472S9r4'
 
   results = spotify.artist_top_tracks(lz_uri)
   print(spotify.recommendation_genre_seeds())
@@ -163,12 +166,33 @@ def test_spotify():
       #print('audio    : ' + track['preview_url'])
       #print('cover art: ' + track['album']['images'][0]['url'])
       #print()
-  return Response(200, "tested spotify check terminal log!").serialize()
+  return Response(200, results, "tested spotify check terminal log!").serialize()
 
 @app.route('/allGenres')
 def all_genres():
   results = spotify.recommendation_genre_seeds()
   return Response(200, results).serialize()
+
+
+@app.route('/lexie')
+def lexie():
+  res = []
+  
+  
+  response = spotify.playlist("0RVjFnEY7zzHWtQzOG4wKB")
+  #print(response['tracks']['items'][5]['track']['name'])
+  for i in range(5):
+    #innerRes = (response['tracks']['items'][i]['track']['name'], response['tracks']['items'][i]['track']['duration_ms'])
+    innerRes = []
+    innerRes.append(response['tracks']['items'][i]['track']['name'])
+    innerRes.append(response['tracks']['items'][i]['track']['duration_ms'])
+    innerRes.append(response['tracks']['items'][i]['track']['artists'][0]['name'])
+    res.append(innerRes)
+
+
+  #res = innerRes + outterRes 
+  return Response(200, res).serialize()
+
 
 @app.route('/recommendations', methods=['GET', 'POST'])
 def rec():
@@ -177,7 +201,7 @@ def rec():
     return Response(200, results).serialize()
   elif request.method == 'POST':
     genreSeeds = request.args.getlist('finalGenres[]')
-    results = spotify.recommendations(None, genreSeeds, seed_tracks=None, limit=10)
+    results = spotify.recommendations(None, genreSeeds, seed_tracks=None, limit=100)
     return Response(200, results).serialize()
 
 #NOTE THAT IT RETURNS MERGED RESULTS
@@ -197,8 +221,8 @@ def all_artists():
   artist = spotify.artist(urn)
   print(artist)
 
-  user = spotify.user('plamere')
-  print(user)
+  # user = spotify.user('plamere')
+  # print(user)
   return Response(200, user).serialize()
 
 @app.route('/spotify')
