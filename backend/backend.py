@@ -174,14 +174,29 @@ def all_genres():
   return Response(200, results).serialize()
 
 
+@app.route('/sus')
+def sus():
+  response1 = spotify.search(q='vibe + artist1', type='playlist')
+  id1 = response1['playlists']['items'][0]['id']
+  
+  response2 = spotify.search(q='vibe + artist2', type='playlist')
+  id2 = response2['playlists']['items'][0]['id']
+  
+  response3 = spotify.search(q='vibe + artist3', type='playlist')
+  id3 = response3['playlists']['items'][0]['id']
+
+  return Response(200, [id1, id2, id3]).serialize()
+   
+
 @app.route('/lexie')
 def lexie():
   #ALL WE NEED TO DO IS PASS THE GENRE1, GENRE2, GENRE3, ID1,ID2, ID3
   res = []
   #get ids for all three playlists (corresponding with each artist + vibe)
-  response1 = spotify.playlist("0RVjFnEY7zzHWtQzOG4wKB")
-  response2 = spotify.playlist("3Kmqb5j2x9qfYDXjSzlmbi")
-  response3 = spotify.playlist("1etBZAb8BFmHtiCx1eFDSz")
+
+  response1 = spotify.playlist("id1")
+  response2 = spotify.playlist("id2")
+  response3 = spotify.playlist("id3")
 
   for i in range(5):
     innerRes1 = []
@@ -241,6 +256,10 @@ def rec():
 def newPlaylist():
   document = request.args.getlist('dataToSend[]')
   print(document)
+  print('Vibe of Playlist: ' + document[0])
+  
+  print('Artist + Genre: ' + document[2])
+
   return Response(200, document).serialize()
 
 @app.route('/allArtists')

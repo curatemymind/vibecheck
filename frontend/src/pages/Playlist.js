@@ -43,7 +43,7 @@ class Playlist extends React.Component {
     axios.get(`http://localhost:5000/allGenres`)
     .then((response) => {
       for (var i = 0; i < response.data.data.genres.length; i++) {
-      genres.push({ label: response.data.data.genres[i], value: response.data.data.genres[i] })
+      genres.push({ label: response.data.data.genres[i], value: response.data.data.genres[i]})
       }
       
       this.setState({
@@ -70,7 +70,7 @@ class Playlist extends React.Component {
 
       for(var i = 0; i < chosenArtists.length; i++)
       {
-        tempArray.push(chosenArtists[i]['label'])
+        tempArray.push([chosenArtists[i]['label'], chosenArtists[i]['parent']])
       }
       this.setState({chosenArtists: tempArray})
     }
@@ -133,8 +133,7 @@ class Playlist extends React.Component {
           .then((response) => {
             var length = (response.data.data.tracks.length)
             for (var i = 0; i < length; i++) {
-              console.log(response.data.data.tracks[i].artists[0].name)
-              recommended.push({label: response.data.data.tracks[i].artists[0].name, value: response.data.data.tracks[i].artists[0].name})
+              recommended.push({label: response.data.data.tracks[i].artists[0].name, value: response.data.data.tracks[i].artists[0].name, parent: finalGenres[0]})
             }
             //alert(recommended.length)
           }).catch((error) => {

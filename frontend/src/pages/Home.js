@@ -9,25 +9,6 @@ const genres = []
 const animatedComponents = makeAnimated();
 class Home extends React.Component {
 
-
-  //   <Select options={genres} onChange={this.handleGenres} components={animatedComponents} isMulti />
-
-  //   <div className="col-md-4"></div>
-  // </div>
-  //   <label for="genres">Choose three Genres:</label>
-  //    <br></br>
-  //      <select name="genres" id="genres" multiple>
-  //        {this.items}
-  //      </select>
-  //      <br></br>
-  //      <label for="artists">Choose three artists:</label>
-  //      <br></br>
-  //      <select name="artists" id="artists" multiple>
-  //        {this.artists}
-  //      </select>
-  //      <br></br>
-  // </div>
-
   //the states of emotion and source will be set to null initially until the user had filled out the form.
   constructor() {
     super();
