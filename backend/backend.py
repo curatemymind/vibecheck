@@ -247,20 +247,77 @@ def rec():
     return Response(200, results).serialize()
   elif request.method == 'POST':
     genreSeeds = request.args.getlist('finalGenres[]')
-    results = spotify.recommendations(None, genreSeeds, seed_tracks=None, limit=100)
+    results = spotify.recommendations(None, genreSeeds, seed_tracks=None, limit=20)
     return Response(200, results).serialize()
 
 #NOTE THAT IT RETURNS MERGED RESULTS
 
 @app.route('/newPlaylist', methods=['POST'])
 def newPlaylist():
-  document = request.args.getlist('dataToSend[]')
-  print(document)
-  print('Vibe of Playlist: ' + document[0])
-  
-  print('Artist + Genre: ' + document[2])
+  #In the arrays used in this example, even indices hold song/artist names 
+  #And odd indices hold the genre
+  #I believe this was the most efficient way to transfer the data over from array to array without losing
+  #anything/getting mixed up in semantics of dicts and such 
 
-  return Response(200, document).serialize()
+  #gets list from "arguments" passed over by our manual react submit function
+  document = request.args.getlist('dataToSend[]')
+  
+  #) [0] = Vibe of playlist
+  #) [1] = All Genres selected 
+  #) [2] = Artists selected and the genre they belong to i.e. ['Drake', 'Hip-Hop']
+  print('Vibe of Playlist: ' + document[0])
+  vibe = document[0]
+  
+  # this series of string formatting takes the string "array" that was passed from frontend
+  # and converts iit into a list 
+  parsed = str(document[2]).replace('[', '') 
+  parsed = parsed.replace(']', '') 
+  parsed = parsed.split(',')
+
+  for i in range (len(parsed)):
+    parsed[i] = parsed[i].replace('"', '')
+
+  #prints data passed from frontend as string 
+  #print(parsed)
+  i = 0
+  #array to keep track of playlist id and genre 
+  #i.e. ['ID0', 'GENRE0', 'ID1', 'GENRE1']
+  idsAndGenres = []
+  #ADD ERROR CHECKING! SOME ARTISTS RETURN ONLY ONE RELEVANT PLAYLIST SO USING [0]['ID']
+  #WILL RETURN OUT OF RANGE 
+  while i < len(parsed):
+    #print(parsed[i] + ": " + parsed[i+1])
+    #parsed[i+1] accesses the artiist's genre in our data structure
+
+    #performs search and appends ID of playlist and then the genre it belongs to
+    response1 = spotify.search(q=str(vibe + " " + parsed[i]),  type='playlist')
+    idsAndGenres.append(response1['playlists']['items'][0]['id'])
+    idsAndGenres.append(parsed[i + 1])
+    i += 2
+  
+  #prints playlist ID and Genres
+  #print(idsAndGenres)
+  
+  finalResponse = []
+  i = 0
+
+  while i < len(idsAndGenres):
+    #queries playlist
+    res = spotify.playlist(idsAndGenres[i])
+    #ERROR CHECK TO SEE IF PLAYLIST HAS FIVE SONGS 
+    for j in range(5):
+      #makes array of metadata to append into larger final response array
+      innerRes = []
+      innerRes.append(res['tracks']['items'][j]['track']['name'])
+      innerRes.append(res['tracks']['items'][j]['track']['duration_ms'])
+      innerRes.append(res['tracks']['items'][j]['track']['artists'][0]['name'])
+      innerRes.append(idsAndGenres[i + 1])
+      finalResponse.append(innerRes)
+    i += 2
+  
+  #prints entire playlist with metadata and genre for each song :)
+  print(finalResponse)
+  return Response(200, finalResponse).serialize()
 
 @app.route('/allArtists')
 def all_artists():
