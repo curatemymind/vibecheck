@@ -13,6 +13,8 @@ import pymysql
 import json 
 import requests 
 
+
+global userid 
 #connection string to RDS. This is preferred because it lets you pass in the
 #database argument rather than having to select it first, more condensed
 db = pymysql.connect(
@@ -104,6 +106,7 @@ def data():
 
 @app.route('/user', methods=['GET', 'POST'])
 def user():
+  global userid
   if request.method == 'POST': 
     document = request.form.to_dict()
     firstname = document['firstname']
@@ -194,10 +197,10 @@ def lexie():
   res = []
   #get ids for all three playlists (corresponding with each artist + vibe)
 
-  response1 = spotify.playlist("id1")
-  response2 = spotify.playlist("id2")
-  response3 = spotify.playlist("id3")
-
+  response1 = spotify.playlist("0RVjFnEY7zzHWtQzOG4wKB")
+  response2 = spotify.playlist("3Kmqb5j2x9qfYDXjSzlmbi")
+  response3 = spotify.playlist("1etBZAb8BFmHtiCx1eFDSz")
+ 
   for i in range(5):
     innerRes1 = []
     innerRes1.append(response1['tracks']['items'][i]['track']['name'])
@@ -221,6 +224,7 @@ def lexie():
     innerRes3.append(response3['tracks']['items'][i]['track']['artists'][0]['name'])
     innerRes3.append("genre 3")
     res.append(innerRes3)
+
 
   count = 0
   for val in res:
@@ -247,7 +251,7 @@ def rec():
     return Response(200, results).serialize()
   elif request.method == 'POST':
     genreSeeds = request.args.getlist('finalGenres[]')
-    results = spotify.recommendations(None, genreSeeds, seed_tracks=None, limit=20)
+    results = spotify.recommendations(None, genreSeeds, seed_tracks=None, limit=100)
     return Response(200, results).serialize()
 
 #NOTE THAT IT RETURNS MERGED RESULTS
@@ -258,15 +262,24 @@ def newPlaylist():
   #And odd indices hold the genre
   #I believe this was the most efficient way to transfer the data over from array to array without losing
   #anything/getting mixed up in semantics of dicts and such 
-
+  global userid
   #gets list from "arguments" passed over by our manual react submit function
   document = request.args.getlist('dataToSend[]')
   
   #) [0] = Vibe of playlist
   #) [1] = All Genres selected 
   #) [2] = Artists selected and the genre they belong to i.e. ['Drake', 'Hip-Hop']
-  print('Vibe of Playlist: ' + document[0])
+  
+
+  #VIBE OF PLAYLIST TO PUSH TO PLAYLIST TABLE 
   vibe = document[0]
+  playlistName = document[3]
+
+  print('Playlist Name: ' + playlistName)
+  print('Vibe of Playlist: ' + vibe)
+
+  #NAME OF PLAYLIST TO PUSH TO PLAYLIST TABLE 
+
   
   # this series of string formatting takes the string "array" that was passed from frontend
   # and converts iit into a list 
@@ -288,10 +301,10 @@ def newPlaylist():
   while i < len(parsed):
     #print(parsed[i] + ": " + parsed[i+1])
     #parsed[i+1] accesses the artiist's genre in our data structure
-
     #performs search and appends ID of playlist and then the genre it belongs to
     response1 = spotify.search(q=str(vibe + " " + parsed[i]),  type='playlist')
     idsAndGenres.append(response1['playlists']['items'][0]['id'])
+    #i + 1 == Genre 
     idsAndGenres.append(parsed[i + 1])
     i += 2
   
@@ -317,6 +330,32 @@ def newPlaylist():
   
   #prints entire playlist with metadata and genre for each song :)
   print(finalResponse)
+
+  count = 0
+  for item in finalResponse:
+    sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre) VALUES (%s,%s,%s,%s, %s)"
+    item[1] = int(item[1])
+    seconds=(item[1]/1000)%60
+    seconds = int(seconds)
+    minutes=(item[1]/(1000*60))%60
+    minutes = int(minutes)
+    hours=(item[1]/(1000*60*60))%2
+    item[1] = "%d:%d:%d" % (hours, minutes, seconds)
+    duration = duration + seconds
+    item = (count,item[0], item[2],item[1],item[3])
+    cursor.execute(sql, item)
+    db.commit()
+    count += 1
+  
+  sql = "INSERT INTO Playlist ( playlist_name, vibe, userid, Playlist_duration) VALUES (%s,%s,%s, %s)"
+  val = (playlistName, vibe, userid, duration)
+  cursor.execute(sql, val)
+  db.commit()
+
+  print(userid)
+  
+
+
   return Response(200, finalResponse).serialize()
 
 @app.route('/allArtists')

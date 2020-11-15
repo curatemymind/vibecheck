@@ -33,7 +33,9 @@ class Playlist extends React.Component {
         chosenArtists: null,
         change: false,
         arrLen: 0,
+        playlistName: null,
       };
+      this.handleChange = this.handleChange.bind(this);
       this.submit = this.submit.bind(this);
   }
 
@@ -146,9 +148,13 @@ class Playlist extends React.Component {
     else{this.setState({genresSelected: null})}
   };
 
-  submit = function (e) {
+  handleChange(event) {
+    this.setState({playlistName: event.target.value});
+  }
 
-    var dataToSend = [this.state.vibe, this.state.genresSelected, this.state.chosenArtists]
+  submit = function (e) {
+    
+    var dataToSend = [this.state.vibe, this.state.genresSelected, this.state.chosenArtists, this.state.playlistName]
     const request = axios({
       headers: {
       'content-type': 'application/json'
@@ -182,6 +188,8 @@ class Playlist extends React.Component {
             <div className="container">
               <div className="row">
                 <div className="col-md-6">
+                  <h1>Name playlist</h1>
+                  <input type="text" value={this.state.playlistName} onChange={this.handleChange}/>
                   <h1>Select Vibe</h1>
                   <Select options={Vibes} onChange={this.handleVibe} components={animatedComponents}
                   />
