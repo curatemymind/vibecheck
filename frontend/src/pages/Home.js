@@ -21,15 +21,15 @@ class Home extends React.Component {
 
   componentDidMount() {
     const axios = require('axios');
-    axios.get(`http://localhost:5000/data`)
-      .then((response) => {
-        this.setState({
-          data: (JSON.stringify(response.data.data))
-        });
-      }).catch((error) => {
-        alert("There was an error connecting to the api")
-        console.error(error);
-      });
+    // axios.get(`http://localhost:5000/data`)
+    //   .then((response) => {
+    //     this.setState({
+    //       data: (JSON.stringify(response.data.data))
+    //     });
+    //   }).catch((error) => {
+    //     alert("There was an error connecting to the api")
+    //     console.error(error);
+    //   });
 
     axios.get(`http://localhost:5000/allGenres`)
       .then((response) => {

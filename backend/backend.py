@@ -12,7 +12,8 @@ import time
 import pymysql
 import json 
 import requests 
-
+from datetime import datetime
+ 
 
 global userid 
 #connection string to RDS. This is preferred because it lets you pass in the
@@ -79,30 +80,30 @@ def getResponseData(code):
 def hello_world():
   return Response(200, "hello, world!").serialize()
 
-@app.route('/data', methods=['GET', 'POST'])
-@cross_origin()
-def data():
-  if request.method == 'GET':
-    #queryResult array
-    res = []
-    #select all data from table test and set it equal to the cursor
-    cursor.execute("SELECT * FROM test")
-    queryResult = cursor.fetchall()
-    for x in queryResult:
-      print(x)
-      res.append(x)
-    #send the dictionary over to the frontend
-    return Response(200, res).serialize()
-  if request.method == 'POST':
-    document = request.form.to_dict()
-    dummyData = document['dummydata']
-    #goes into the test table and inserts the form's dummy data value
-    cursor.execute("INSERT INTO test (dummyData) VALUES (%s)", dummyData)
-    db.commit()
-    #redirects user to the frontend homepage so they can see the update immediately
-    #this is a sort of unit test, it sends data through the POST and redirects you to
-    #a page that pulls from the GET, In both of these, the db is being interacted with
-    return redirect("http://localhost:3000/")
+# @app.route('/data', methods=['GET', 'POST'])
+# @cross_origin()
+# def data():
+#   if request.method == 'GET':
+#     #queryResult array
+#     res = []
+#     #select all data from table test and set it equal to the cursor
+#     cursor.execute("SELECT * FROM test")
+#     queryResult = cursor.fetchall()
+#     for x in queryResult:
+#       print(x)
+#       res.append(x)
+#     #send the dictionary over to the frontend
+#     return Response(200, res).serialize()
+#   if request.method == 'POST':
+#     document = request.form.to_dict()
+#     dummyData = document['dummydata']
+#     #goes into the test table and inserts the form's dummy data value
+#     cursor.execute("INSERT INTO test (dummyData) VALUES (%s)", dummyData)
+#     db.commit()
+#     #redirects user to the frontend homepage so they can see the update immediately
+#     #this is a sort of unit test, it sends data through the POST and redirects you to
+#     #a page that pulls from the GET, In both of these, the db is being interacted with
+#     return redirect("http://localhost:3000/")
 
 @app.route('/user', methods=['GET', 'POST'])
 def user():
@@ -121,17 +122,28 @@ def user():
 
     hashedPassword = bcrypt.hashpw(rawPassword, bcrypt.gensalt())
     
+    sql = "SELECT MAX(userid) FROM User"
+    cursor.execute(sql)
+    temp_userid = [item[0] for item in cursor.fetchall()]
+  
+    print("***#&$#*$#*$#: " + str(temp_userid[0]) + "**************")
+    if temp_userid[0] is None:
+      print("YOU'RE NOTHING\n\n\n\n\n")
+      userid = 1
+    else:
+      userid = temp_userid[0] + 1
+      print("******USERID:" + str(userid) + "\n\n\n\n\n")
+
     #rawPassword.encode('utf-8')
     #correctPassword = bcrypt.checkpw(rawPassword.encode('utf-8'), user['rawPassword'])
     #hashedPassword = bcrypt.hashpw(rawPassword, bcrypt.gensalt())
-    userid = random.randint(1,100)*2
 
     genres = request.form.getlist('genres')
     artists = request.form.getlist('artists')
      
     if(email == ""):
       #this create table command creates a table
-      sql = "SELECT email,password FROM User2 WHERE email=%s AND password =%s"
+      sql = "SELECT email,password FROM User WHERE email=%s AND password =%s"
       val = (siun,sipw)
       print(cursor.execute(sql, val))
       if(cursor.execute(sql, val)):
@@ -140,13 +152,13 @@ def user():
         print("Incorrect info")
     else:
       #this create table command creates a table
-      sql = "SELECT email FROM User2 WHERE email=%s"
+      sql = "SELECT email FROM User WHERE email=%s"
       val = (email)
       if(cursor.execute(sql, val)):
         #alert here  
         print("u already have an account")
       else:
-        sql = "INSERT INTO User2 ( userid, first_name, last_name, email, password) VALUES (%s,%s,%s,%s, %s)"
+        sql = "INSERT INTO User ( userid, first_name, last_name, email, password) VALUES (%s,%s,%s,%s, %s)"
         val = (userid,firstname,lastname,email,rawPassword)
         cursor.execute(sql, val)
         db.commit()
@@ -331,27 +343,67 @@ def newPlaylist():
   #prints entire playlist with metadata and genre for each song :)
   print(finalResponse)
 
-  count = 0
+  sql = "SELECT MAX(playlistid) FROM Playlist"
+  cursor.execute(sql)
+  temp_playlistid = [item[0] for item in cursor.fetchall()]
+  
+  if temp_playlistid[0] is None:
+    playlistid = 1
+  else:
+    playlistid = temp_playlistid[0] + 1
+ 
+  totalms = 0
+  sql = "SELECT MAX(songid) FROM Song"
+  cursor.execute(sql)
+  temp_songid = [item[0] for item in cursor.fetchall()]
+  
+  if temp_songid[0] is None:
+    songid = 1
+  else:
+    songid = temp_songid[0] + 1
+  #print(cursor.execute(sql))
+  #INSERT INTO Creates (userid, playlistid) VALUES (%s, %s) FROM User, Playlist WHERE User.userid=Playlist.userid
+  
+
   for item in finalResponse:
     sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre) VALUES (%s,%s,%s,%s, %s)"
     item[1] = int(item[1])
+    totalms = totalms + item[1]
     seconds=(item[1]/1000)%60
     seconds = int(seconds)
     minutes=(item[1]/(1000*60))%60
     minutes = int(minutes)
     hours=(item[1]/(1000*60*60))%2
     item[1] = "%d:%d:%d" % (hours, minutes, seconds)
-    duration = duration + seconds
-    item = (count,item[0], item[2],item[1],item[3])
+    item = (songid,item[0], item[2],item[1],item[3])
     cursor.execute(sql, item)
     db.commit()
-    count += 1
-  
-  sql = "INSERT INTO Playlist ( playlist_name, vibe, userid, Playlist_duration) VALUES (%s,%s,%s, %s)"
-  val = (playlistName, vibe, userid, duration)
+    # sql = "INSERT INTO Consists (songid, playlistid) VALUES (%s,%s)"
+    # item = (songid,playlistid)
+    # cursor.execute(sql, item)
+    # db.commit()
+
+    songid = songid + 1
+ 
+  seconds2=(totalms/1000)%60
+  seconds2 = int(seconds2)
+  minutes2=(totalms/(1000*60))%60
+  minutes2 = int(minutes2)
+  hours2=(totalms/(1000*60*60))%2
+  playlistDuration = "%d:%d:%d" % (hours2, minutes2, seconds2)
+
+  sql = "INSERT INTO Playlist ( playlistid, playlist_name, vibe, userid, Playlist_duration) VALUES (%s,%s,%s,%s, %s)"
+  val = (playlistid, playlistName, vibe, userid, playlistDuration)
   cursor.execute(sql, val)
   db.commit()
+  
+  sql = "INSERT INTO Creates (userid, playlistid) VALUES (%s, (SELECT playlistid FROM Playlist INNER JOIN User ON Playlist.userid = %s))"
 
+  item = (userid, userid)
+  cursor.execute(sql, item)
+  db.commit()
+
+ 
   print(userid)
   
 
