@@ -364,6 +364,10 @@ def newPlaylist():
   #print(cursor.execute(sql))
   #INSERT INTO Creates (userid, playlistid) VALUES (%s, %s) FROM User, Playlist WHERE User.userid=Playlist.userid
   
+  sql = "INSERT INTO Playlist ( playlistid, playlist_name, vibe, userid) VALUES (%s,%s,%s,%s)"
+  val = (playlistid, playlistName, vibe, userid)
+  cursor.execute(sql, val)
+  db.commit()
 
   for item in finalResponse:
     sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre) VALUES (%s,%s,%s,%s, %s)"
@@ -378,10 +382,10 @@ def newPlaylist():
     item = (songid,item[0], item[2],item[1],item[3])
     cursor.execute(sql, item)
     db.commit()
-    # sql = "INSERT INTO Consists (songid, playlistid) VALUES (%s,%s)"
-    # item = (songid,playlistid)
-    # cursor.execute(sql, item)
-    # db.commit()
+    sql = "INSERT INTO Consists (songid, playlistid) VALUES (%s,%s)"
+    item = (songid,playlistid)
+    cursor.execute(sql, item)
+    db.commit()
 
     songid = songid + 1
  
@@ -392,14 +396,14 @@ def newPlaylist():
   hours2=(totalms/(1000*60*60))%2
   playlistDuration = "%d:%d:%d" % (hours2, minutes2, seconds2)
 
-  sql = "INSERT INTO Playlist ( playlistid, playlist_name, vibe, userid, Playlist_duration) VALUES (%s,%s,%s,%s, %s)"
-  val = (playlistid, playlistName, vibe, userid, playlistDuration)
+  sql = "UPDATE Playlist SET Playlist_duration = %s WHERE playlistid = %s"
+  val = (playlistDuration, playlistid)
   cursor.execute(sql, val)
   db.commit()
   
-  sql = "INSERT INTO Creates (userid, playlistid) VALUES (%s, (SELECT playlistid FROM Playlist INNER JOIN User ON Playlist.userid = %s))"
+  sql = "INSERT INTO Creates (userid, playlistid) VALUES (%s,%s)"
 
-  item = (userid, userid)
+  item = (userid, playlistid)
   cursor.execute(sql, item)
   db.commit()
 
