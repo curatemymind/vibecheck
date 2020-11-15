@@ -178,26 +178,26 @@ class Playlist extends React.Component {
     {
       return (
         <div>
-          <h1>this is used to validate states are updating properly</h1>
+          {/* <h1>this is used to validate states are updating properly</h1>
           <h2>Vibe: {this.state.vibe}</h2>
           <h2>Genres Selected [{this.state.arrLen}]: {this.state.genresSelected}</h2>
 
           <h2>Artists: {this.state.chosenArtists}</h2>
-          
+           */}
           <form action='http://localhost:5000/newPlaylist' method='POST' onSubmit={this.submit}>
             <div className="container">
               <div className="row">
                 <div className="col-md-6">
-                  <h1>Name playlist</h1>
+                  <h1>Playlist Name</h1>
                   <input type="text" value={this.state.playlistName} onChange={this.handleChange}/>
-                  <h1>Select Vibe</h1>
+                  <h1>Select One Vibe</h1>
                   <Select options={Vibes} onChange={this.handleVibe} components={animatedComponents}
                   />
                   <br></br>
-                  <h1>Select Genres</h1>
+                  <h1>Select Three Genres</h1>
                   <Select options={genres} onChange={this.handleGenres} components={animatedComponents} isMulti />
                   <br></br>
-                  <h1>Select Artists</h1>
+                  <h1>Select Three Artists</h1>
                   {this.state.change === true && <Select options={recommended} onChange={this.handleArtists} components={animatedComponents} isMulti />}
                   {this.state.change === false && <Select options={recommended} onChange={this.handleArtists} components={animatedComponents} isMulti />}
                   <br></br>
