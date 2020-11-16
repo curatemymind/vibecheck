@@ -14,6 +14,15 @@ import json
 import requests
 from datetime import datetime
 
+ #SELECT Song.song_name, Song.artist, Song.duration FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = 4;
+ #SELECT vibe, playlist_name, Playlist_duration FROM Playlist WHERE playlistid = 4;
+
+ #SELECT playlist FROM Playlist WHERE userid=%s
+ #->this could return many so we save these values in a list
+ #->we can loop through the list
+ #for id in list_of_pid:
+	#select statements that you wrote
+	#print out all songs in playlist
 
 global userid
 # connection string to RDS. This is preferred because it lets you pass in the
@@ -304,7 +313,6 @@ def newPlaylist():
     db.commit()
 
     sql = "INSERT INTO Creates (userid, playlistid) VALUES (%s,%s)"
-
     item = (userid, playlistid)
     cursor.execute(sql, item)
     db.commit()
