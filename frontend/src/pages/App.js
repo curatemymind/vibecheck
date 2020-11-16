@@ -16,7 +16,7 @@ const Vibes = [
   { label: "Nostalgic", value: 528 }
 ];
 
-
+ 
 
 class App extends Component {
 
@@ -34,16 +34,17 @@ class App extends Component {
 
   render() {
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-3"></div>
-          <div className="col-md-6">
-            <Select options={Vibes} onChange={this.handleVibe} components={animatedComponents}
-               />
-          </div>
-          <div className="col-md-4"></div>
-        </div>
-      </div>
+      <h1>THIS IS WHERE WE PUT ALL OF THE USERS PLAYLISTS</h1>
+      // <div className="container">
+      //   <div className="row">
+      //     <div className="col-md-3"></div>
+      //     <div className="col-md-6">
+      //       <Select options={Vibes} onChange={this.handleVibe} components={animatedComponents}
+      //          />
+      //     </div>
+      //     <div className="col-md-4"></div>
+      //   </div>
+      // </div>
     );
   }
 }
