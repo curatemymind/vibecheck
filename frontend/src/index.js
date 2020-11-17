@@ -5,8 +5,8 @@ import * as serviceWorker from './serviceWorker';
 import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
 import Home from './pages/Home'
 import App from './pages/App'
-
 import Playlist from './pages/Playlist'
+import AxiosExample from './pages/AxiosExample'
 
 /*using react router we set a constant equal to whatever component
 we would like to render*/
@@ -16,6 +16,7 @@ const routing = (
       <Route exact path="/" component={Home}/> 
       <Route exact path="/test" component={App}/>  
       <Route exact path="/playlist" component={Playlist}/>  
+      <Route exact path="/axios" component={AxiosExample}/> 
 
     </Switch>
   </Router>
