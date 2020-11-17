@@ -166,9 +166,8 @@ class Playlist extends React.Component {
       }
     })
     
-    alert("Since we did a manual post request with the data contained in the states, we need to manually redirect to the next page. The output will be in the python terminal.")
     e.preventDefault();
-    window.location.replace("http://localhost:3000/test")
+    window.location.replace("http://localhost:3000/axios")
   }
 
   render() 

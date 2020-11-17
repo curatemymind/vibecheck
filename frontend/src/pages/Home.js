@@ -18,6 +18,7 @@ class Home extends React.Component {
     };
   }
 
+   
   componentDidMount() {
     
   }
@@ -69,7 +70,7 @@ class Home extends React.Component {
                   <input id="pass" name="email" placeholder="E-mail Address" type="text" class="input" />
                 </div>
                 <div class="group">
-                  <input type="submit" class="button" value="Sign Up" />
+                  <input type="submit" class="button" value="Sign Up"  />
                 </div>
               </div>
             </div>

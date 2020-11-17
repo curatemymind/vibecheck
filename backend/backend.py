@@ -25,6 +25,9 @@ from datetime import datetime
 	#print out all songs in playlist
 
 global userid
+
+
+ 
 # connection string to RDS. This is preferred because it lets you pass in the
 # database argument rather than having to select it first, more condensed
 db = pymysql.connect(
@@ -139,8 +142,8 @@ def user():
                 val = (userid, firstname, lastname, email, rawPassword)
                 cursor.execute(sql, val)
                 db.commit()
-
-        return Response(200, [siun, sipw, userid, firstname, lastname, email, p, hashedPassword, genres, artists]).serialize()
+        return redirect("http://localhost:3000/playlist")
+        #return Response(200, [siun, sipw, userid, firstname, lastname, email, p, hashedPassword, genres, artists]).serialize()
 
 
 # spotify implementation
@@ -340,7 +343,20 @@ def example():
 
 @app.route('/exampleArray')
 def exampleArray():
-    return Response(200, ["index1", "index2", "index3", "index4"]).serialize()
+    global userid
+    print(userid)
+    sql = "SELECT playlistid FROM Creates WHERE userid = %s"
+    val = userid
+    cursor.execute(sql, val) 
+    hi = cursor.fetchall()
+  
+    sql = "SELECT Song.song_name, Song.artist FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s;"
+    val = str(hi[0][0])
+    cursor.execute(sql, val)
+    res = cursor.fetchall()
+    print(res)
+
+    return Response(200, res).serialize()
 
 
 if __name__ == '__main__':
