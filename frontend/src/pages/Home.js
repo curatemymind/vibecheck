@@ -4,6 +4,7 @@ import { Redirect } from "react-router-dom";
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import './loginsignup.css';
+import axios from 'axios';
 
 const genres = []
 const animatedComponents = makeAnimated();
@@ -13,88 +14,69 @@ class Home extends React.Component {
   constructor() {
     super();
     this.state = {
-      data: null,
-      genres: null,
-      recArtists: null,
+      example: null,
+      exampleArray: [],
     };
   }
 
   componentDidMount() {
-    const axios = require('axios');
-    // axios.get(`http://localhost:5000/data`)
-    //   .then((response) => {
-    //     this.setState({
-    //       data: (JSON.stringify(response.data.data))
-    //     });
-    //   }).catch((error) => {
-    //     alert("There was an error connecting to the api")
-    //     console.error(error);
-    //   });
-
-    axios.get(`http://localhost:5000/allGenres`)
-      .then((response) => {
-
-        for (var i = 0; i < response.data.data.genres.length; i++) {
-          genres.push({ label: response.data.data.genres[i], value: response.data.data.genres[i] })
-        }
-
-        this.setState({
-          genres: response.data.data.genres
-        });
-      }).catch((error) => {
-        alert("There was an error connecting to the api")
-        console.error(error);
+    //creates a k,v pair list for genres that will be fed into react-select
+    axios.get(`http://localhost:5000/example`)
+    .then((response) => {
+      //alert(response.data.data)
+      
+      this.setState({
+        example: response.data.data
       });
 
-    axios.get(`http://localhost:5000/recommendations`)
-      .then((response) => {
-        var length = (response.data.data.tracks.length)
+    }).catch((error) => {
+      alert("There was an error connecting to the api")
+      console.error(error);
+    });
 
-        var tempArr = []
-        for (var i = 0; i < length; i++) {
-          tempArr.push(response.data.data.tracks[i].artists[0].name)
-        }
-        this.setState({
-          recArtists: tempArr
-        });
-      }).catch((error) => {
-        alert("There was an error connecting to the api")
-        console.error(error);
+    
+    axios.get(`http://localhost:5000/exampleArray`)
+    .then((response) => {
+      //alert(response.data.data)
+
+      //we have to set a temp array and then set that equal to that state
+      //this is beacause state arrays have no simple push feature, only setState
+      var tempArray = []
+      for (var i = 0; i < response.data.data.length; i++) {
+        tempArray.push(response.data.data[i])
+      }
+      
+      this.setState({
+        exampleArray: tempArray
       });
+
+    }).catch((error) => {
+      alert("There was an error connecting to the api")
+      console.error(error);
+    });
+
   }
 
-  handleGenres = genreChange => {
-    var string = ""
-    var finalGenres = []
-
-    if (genreChange != null) {
-      if (genreChange.length >= 3) {
-        alert(genreChange.length)
-        for (var i = genreChange.length - 3; i < genreChange.length; i++) {
-          finalGenres.push(genreChange[i]['value'])
-        }
-        alert(finalGenres)
-      }
-    }
-  };
 
   render() {
-    if (this.state.genres != null) {
-      this.items = this.state.genres.map((item, key) =>
-        <option name={item} key={key}>{item}</option>
-      );
-    }
-
-    if (this.state.recArtists != null) {
-      this.artists = this.state.recArtists.map((item, key) =>
-        <option name={item} key={key}>{item}</option>
-      );
-    }
+    
 
     return (
       <form action='http://localhost:5000/user' method='POST'>
         <div class="login-wrap">
           <div class="login-html">
+            {/*React states can be called directly in the html*/}
+            <h2>{this.state.example}</h2>
+            {/*In React, map is the equivalent of a loop for html. it requires (key, value) assignments*/}
+            <ul>
+              {this.state.exampleArray.map((item, key) =>
+                <div>
+                  <h1>{item}</h1>
+                  <p>you can add any html to this loop!</p>
+                </div>
+              )}
+            </ul>
+
             <h1>Vibecheck</h1>
             <input id="tab-1" type="radio" name="tab" class="sign-in" />
             <label for="tab-1" class="tab">Sign In</label>

@@ -334,13 +334,14 @@ def all_artists():
     return Response(200, user).serialize()
 
 
-@app.route('/spotify')
-def spo():
-    return Response(200, "successful redirect!").serialize()
+@app.route('/example')
+def example():
+    return Response(200, "this is dynamically loaded data that is set into a state using axios!").serialize()
 
+@app.route('/exampleArray')
+def exampleArray():
+    return Response(200, ["index1", "index2", "index3", "index4"]).serialize()
 
-user = '4l05jlcp1nkx9islgr7ontt7c'
-scope = 'user-read-private user-read-playback-state user-modify-playback-state'
 
 if __name__ == '__main__':
     app.run(host="localhost", port=5000, debug=True)
