@@ -228,16 +228,23 @@ def newPlaylist():
         #print(parsed[i] + ": " + parsed[i+1])
         # parsed[i+1] accesses the artiist's genre in our data structure
         # performs search and appends ID of playlist and then the genre it belongs to
+
         response1 = spotify.search(
             q=str(vibe + " " + parsed[i]),  type='playlist')
+
+        if(response1['playlists']['total'] == 0):
+            response1 = spotify.search(
+            q=str(parsed[i]),  type='playlist')
+
+    
         idsAndGenres.append(response1['playlists']['items'][0]['id'])
+
         #i + 1 == Genre
         idsAndGenres.append(parsed[i + 1])
-        i += 2
-
+        i += 2 
+     
     # prints playlist ID and Genres
-    # print(idsAndGenres)
-
+    
     finalResponse = []
     i = 0
 
@@ -344,19 +351,27 @@ def example():
 @app.route('/exampleArray')
 def exampleArray():
     global userid
+    userid = 1
     print(userid)
     sql = "SELECT playlistid FROM Creates WHERE userid = %s"
     val = userid
     cursor.execute(sql, val) 
     hi = cursor.fetchall()
-  
-    sql = "SELECT Song.song_name, Song.artist FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s;"
-    val = str(hi[0][0])
-    cursor.execute(sql, val)
+    
+    print(hi)
+    #print(str(hi[0]))
+    #print(str(hi[0]))
+    
+    sql = "SELECT Song.song_name, Song.artist FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = " 
+     
+    cursor.execute(sql)
     res = cursor.fetchall()
-    print(res)
+    #print("\n\n\n\n")
+    #print(res)
+    #print("\n\n\n\n")
+    #print(hi[0][0]) 
 
-    return Response(200, res).serialize()
+    return Response(200, [hi]).serialize()
 
 
 if __name__ == '__main__':
