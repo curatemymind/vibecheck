@@ -167,19 +167,40 @@ def test_spotify():
 @app.route('/allGenres')
 def all_genres():
     results = spotify.recommendation_genre_seeds()
+    
     return Response(200, results).serialize()
 
 
 @app.route('/recommendations', methods=['GET', 'POST'])
 def rec():
     if request.method == 'GET':
-        results = spotify.recommendations(None, ['alternative'])
-        return Response(200, results).serialize()
+        results = spotify.recommendations(None, ['hip-hop'])
+        
+        test = results['tracks'][1]['artists'][0]['name']
+        length = len(results['tracks'])
+
+        res = []
+        for i in range(len(results['tracks'])):
+            res.append(results['tracks'][i]['artists'][0]['name'])
+
+        return Response(200, res).serialize()
     elif request.method == 'POST':
         genreSeeds = request.args.getlist('finalGenres[]')
         results = spotify.recommendations(
             None, genreSeeds, seed_tracks=None, limit=100)
-        return Response(200, results).serialize()
+
+        #print(results)
+        #results = dict.fromkeys(results)
+        test = results['tracks'][1]['artists'][0]['name']
+        length = len(results['tracks'])
+
+        res = []
+        for i in range(len(results['tracks'])):
+            res.append(results['tracks'][i]['artists'][0]['name'])
+
+        res = list(dict.fromkeys(res))
+        return Response(200, res).serialize()
+        #return Response(200, results).serialize()
 
 # NOTE THAT IT RETURNS MERGED RESULTS
 

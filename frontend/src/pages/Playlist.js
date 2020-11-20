@@ -74,6 +74,7 @@ class Playlist extends React.Component {
       {
         tempArray.push([chosenArtists[i]['label'], chosenArtists[i]['parent']])
       }
+      //tempArray = [...new Set(tempArray)];
       this.setState({chosenArtists: tempArray})
     }
     else{this.setState({chosenArtists: null})}
@@ -133,10 +134,22 @@ class Playlist extends React.Component {
             }
           })
           .then((response) => {
-            var length = (response.data.data.tracks.length)
+            var length = (response.data.data.length)
+            //alert(response.data.data.label)
+            //console.log(response)
+            
+            var temp = recommended
+
+
             for (var i = 0; i < length; i++) {
-              recommended.push({label: response.data.data.tracks[i].artists[0].name, value: response.data.data.tracks[i].artists[0].name, parent: finalGenres[0]})
+              //console.log(response.data.data.tracks[i].artists[0].name)
+
+              recommended.push({label: response.data.data[i], value: response.data.data[i], parent: finalGenres[0]})
             }
+            console.log(recommended)
+
+            
+ 
             //alert(recommended.length)
           }).catch((error) => {
             alert("There was an error connecting to the api")
