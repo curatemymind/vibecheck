@@ -213,13 +213,15 @@ def newPlaylist():
     # anything/getting mixed up in semantics of dicts and such
     global userid
     # gets list from "arguments" passed over by our manual react submit function
-    document = request.args.getlist('dataToSend[]')
-
+    #document = request.args.getlist('dataToSend[]')
+    document = request.form.to_dict()
+    
+    return Response(200, [document['vibe'], document['genresSelected'], document['chosenArtists'], document['playlistName']]).serialize()
     # ) [0] = Vibe of playlist
     # ) [1] = All Genres selected
     # ) [2] = Artists selected and the genre they belong to i.e. ['Drake', 'Hip-Hop']
 
-    # VIBE OF PLAYLIST TO PUSH TO PLAYLIST TABLE
+"""  # VIBE OF PLAYLIST TO PUSH TO PLAYLIST TABLE
     vibe = document[0]
     playlistName = document[3]
 
@@ -348,7 +350,8 @@ def newPlaylist():
     cursor.execute(sql, item)
     db.commit()
 
-    return Response(200, finalResponse).serialize()
+    return redirect("http://localhost:3000/axios")
+    #return Response(200, finalResponse).serialize() """
 
 
 @app.route('/allArtists')
@@ -369,7 +372,7 @@ def all_artists():
 def example():
     return Response(200, "this is dynamically loaded data that is set into a state using axios!").serialize()
 
-@app.route('/exampleArray')
+""" @app.route('/exampleArray')
 def exampleArray():
     global userid
     userid = 1
@@ -393,7 +396,7 @@ def exampleArray():
     #print(hi[0][0]) 
 
     return Response(200, [hi]).serialize()
-
+ """
 
 if __name__ == '__main__':
     app.run(host="localhost", port=5000, debug=True)

@@ -52,7 +52,7 @@ class AxiosExample extends React.Component {
       });
 
     }).catch((error) => {
-      alert("There was an error connecting to the api")
+      //alert("There was an error connecting to the api")
       console.error(error);
     });
 

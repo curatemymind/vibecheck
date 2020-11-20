@@ -167,6 +167,7 @@ class Playlist extends React.Component {
 
   submit = function (e) {
     
+    //do a hidden form
     var dataToSend = [this.state.vibe, this.state.genresSelected, this.state.chosenArtists, this.state.playlistName]
     const request = axios({
       headers: {
@@ -180,7 +181,7 @@ class Playlist extends React.Component {
     })
     
     e.preventDefault();
-    window.location.replace("http://localhost:3000/axios")
+    //window.location.replace("http://localhost:3000/axios")
   }
 
   render() 
@@ -193,7 +194,7 @@ class Playlist extends React.Component {
 
           <h2>Artists: {this.state.chosenArtists}</h2>
            */}
-          <form action='http://localhost:5000/newPlaylist' method='POST' onSubmit={this.submit}>
+          <form action='http://localhost:5000/newPlaylist' method='POST' >
             <div className="container">
               <div className="row">
                 <div className="col-md-6">
@@ -210,7 +211,14 @@ class Playlist extends React.Component {
                   {this.state.change === true && <Select options={recommended} onChange={this.handleArtists} components={animatedComponents} isMulti />}
                   {this.state.change === false && <Select options={recommended} onChange={this.handleArtists} components={animatedComponents} isMulti />}
                   <br></br>
-                
+                  
+                   <input type="hidden" id="vibe" name="vibe" value={this.state.vibe}></input>
+                   <br></br>
+                   <input type="hidden" id="genresSelected" name="genresSelected" value={this.state.genresSelected}></input>
+                   <br></br>
+                   <input type="hidden" id="chosenArtists" name="chosenArtists" value={this.state.chosenArtists}></input>
+                   <br></br>
+                   <input type="hidden" id="playlistName" name="playlistName" value={this.state.playlistName}></input>
                   <input type="submit" class="button" value="Sign Up" />
                 </div>
               </div>
