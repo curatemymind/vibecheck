@@ -62,13 +62,19 @@ class AxiosExample extends React.Component {
 
     return (
       <div >
-        {/*React states can be called directly in the html*/}
-        <h2>Playlist Name</h2>
+        
         {/*In React, map is the equivalent of a loop for html. it requires (key, value) assignments*/}
           <ul id="menu">
           {this.state.exampleArray.map((item, key) =>
             <div>
-              <li>{item}</li>
+              <h2> Playlist Name: {item[0]}</h2>
+              <h2> Vibe: {item[1]} </h2>
+              <h2> Duration: {item[2]} </h2>
+              <h2>Songs:</h2>
+              {(item[3]).map((song, key2) =>
+              <li>{song}</li>
+              )}
+              <br></br>
             </div>
           )}
         </ul>

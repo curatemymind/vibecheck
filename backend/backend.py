@@ -74,6 +74,10 @@ class Response:
     def serialize(self):
         return json_util.dumps(self.__dict__), {'Content-Type': 'application/json; charset=utf-8'}
 
+def convert(seconds):     
+    min, sec = divmod(seconds, 60)     
+    hour, min = divmod(min, 60)     
+    return "%d:%02d:%02d" % (hour, min, sec)
 
 def getResponseData(code):
     # Dict containing all possible response codes
@@ -403,7 +407,7 @@ def exampleArray():
         newstr = newstr.replace("')'","")
         newstr = newstr.replace(")", "")
         temp = newstr.split(",")
-        songnames = songnames + (temp)
+        songnames = songnames + (temp) 
         while("" in songnames) : 
             songnames.remove("") 
 
@@ -477,8 +481,15 @@ def exampleArray():
         print(songgenres)
         print("NUM OF GENRES:" + str(len(songgenres)))
         print("\n\n\n\n")
+
+        h = []
+        for i in (songdurations):
+            h.append(convert(int(i)))
+
+        print("H!!!!!!!!!!!!!!!!!\n\n\n\n\n")
+        print(h)
         for i in range(len(songgenres)):
-            returnlist.append([songnames[i],songartists[i],songdurations[i],songgenres[i]])
+            returnlist.append([songnames[i] + " ",songartists[i] + " ",h[i]+ " ",songgenres[i]])
         
 
 
