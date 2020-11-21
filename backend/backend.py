@@ -12,7 +12,7 @@ import time
 import pymysql
 import json
 import requests
-from datetime import datetime
+import datetime 
 
 # SELECT Song.song_name, Song.artist, Song.duration FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = 4;
 # SELECT vibe, playlist_name, Playlist_duration FROM Playlist WHERE playlistid = 4;
@@ -89,7 +89,7 @@ def getResponseData(code):
 
     # Return the code's corresponding dict
     return possibleCodes.get(code, errObj)
-
+ 
 
 @app.route('/user', methods=['GET', 'POST'])
 def user():
@@ -335,135 +335,6 @@ def newPlaylist():
 
     return redirect("http://localhost:3000/axios")
 
-
-    # return Response(200, finalResponse).serialize()
-"""
-    # NAME OF PLAYLIST TO PUSH TO PLAYLIST TABLE
-
-    # this series of string formatting takes the string "array" that was passed from frontend
-    # and converts iit into a list
-    parsed = str(document[2]).replace('[', '')
-    parsed = parsed.replace(']', '')
-    parsed = parsed.split(',')
-
-    for i in range(len(parsed)):
-        parsed[i] = parsed[i].replace('"', '')
-
-    # prints data passed from frontend as string
-    # print(parsed)
-    i = 0
-    # array to keep track of playlist id and genre
-    # i.e. ['ID0', 'GENRE0', 'ID1', 'GENRE1']
-    idsAndGenres = []
-    # ADD ERROR CHECKING! SOME ARTISTS RETURN ONLY ONE RELEVANT PLAYLIST SO USING [0]['ID']
-    # WILL RETURN OUT OF RANGE
-    while i < len(parsed):
-        #print(parsed[i] + ": " + parsed[i+1])
-        # parsed[i+1] accesses the artiist's genre in our data structure
-        # performs search and appends ID of playlist and then the genre it belongs to
-
-        response1 = spotify.search(
-            q=str(vibe + " " + parsed[i]),  type='playlist')
-
-        if(response1['playlists']['total'] == 0):
-            response1 = spotify.search(
-            q=str(parsed[i]),  type='playlist')
-
-    
-        idsAndGenres.append(response1['playlists']['items'][0]['id'])
-
-        #i + 1 == Genre
-        idsAndGenres.append(parsed[i + 1])
-        i += 2 
-     
-    # prints playlist ID and Genres
-    
-    finalResponse = []
-    i = 0
-
-    while i < len(idsAndGenres):
-        # queries playlist
-        res = spotify.playlist(idsAndGenres[i])
-        # ERROR CHECK TO SEE IF PLAYLIST HAS FIVE SONGS
-        for j in range(5):
-            # makes array of metadata to append into larger final response array
-            innerRes = []
-            innerRes.append(res['tracks']['items'][j]['track']['name'])
-            innerRes.append(res['tracks']['items'][j]['track']['duration_ms'])
-            innerRes.append(res['tracks']['items'][j]
-                            ['track']['artists'][0]['name'])
-            innerRes.append(idsAndGenres[i + 1])
-            finalResponse.append(innerRes)
-        i += 2
-
-    # prints entire playlist with metadata and genre for each song :)
-    print(finalResponse)
-
-    sql = "SELECT MAX(playlistid) FROM Playlist"
-    cursor.execute(sql)
-    temp_playlistid = [item[0] for item in cursor.fetchall()]
-
-    if temp_playlistid[0] is None:
-        playlistid = 1
-    else:
-        playlistid = temp_playlistid[0] + 1
-
-    totalms = 0
-    sql = "SELECT MAX(songid) FROM Song"
-    cursor.execute(sql)
-    temp_songid = [item[0] for item in cursor.fetchall()]
-
-    if temp_songid[0] is None:
-        songid = 1
-    else:
-        songid = temp_songid[0] + 1
-
-    sql = "INSERT INTO Playlist ( playlistid, playlist_name, vibe, userid) VALUES (%s,%s,%s,%s)"
-    val = (playlistid, playlistName, vibe, userid)
-    cursor.execute(sql, val)
-    db.commit()
-
-    for item in finalResponse:
-        sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre) VALUES (%s,%s,%s,%s, %s)"
-        item[1] = int(item[1])
-        totalms = totalms + item[1]
-        seconds = (item[1]/1000) % 60
-        seconds = int(seconds)
-        minutes = (item[1]/(1000*60)) % 60
-        minutes = int(minutes)
-        hours = (item[1]/(1000*60*60)) % 2
-        item[1] = "%d:%d:%d" % (hours, minutes, seconds)
-        item = (songid, item[0], item[2], item[1], item[3])
-        cursor.execute(sql, item)
-        db.commit()
-        sql = "INSERT INTO Consists (songid, playlistid) VALUES (%s,%s)"
-        item = (songid, playlistid)
-        cursor.execute(sql, item)
-        db.commit()
-
-        songid = songid + 1
-
-    seconds2 = (totalms/1000) % 60
-    seconds2 = int(seconds2)
-    minutes2 = (totalms/(1000*60)) % 60
-    minutes2 = int(minutes2)
-    hours2 = (totalms/(1000*60*60)) % 2
-    playlistDuration = "%d:%d:%d" % (hours2, minutes2, seconds2)
-
-    sql = "UPDATE Playlist SET Playlist_duration = %s WHERE playlistid = %s"
-    val = (playlistDuration, playlistid)
-    cursor.execute(sql, val)
-    db.commit()
-
-    sql = "INSERT INTO Creates (userid, playlistid) VALUES (%s,%s)"
-    item = (userid, playlistid)
-    cursor.execute(sql, item)
-    db.commit()
-
-    return redirect("http://localhost:3000/axios")
-    #return Response(200, finalResponse).serialize() """
-
-
 @app.route('/allArtists')
 def all_artists():
     #results = spotify.current_user_top_artists()
@@ -500,13 +371,19 @@ def exampleArray():
     songdurations = []
     songartists = []
     songgenres = []
+
+    returnlist = []
+    mack = []
+    playlistlist = []
     total = 0
     for j in hi:
+        print("\n\n\nLOOKING AT PLAYLIST ID " + str(j))
         sql = "SELECT COUNT(*) FROM Consists WHERE playlistid = %s"
         val = j
         cursor.execute(sql, val)
         songcount = cursor.fetchall()
         numofsongs = int((songcount[0][0]))
+        print("NUMBER OF SONGS IN PLAYLIST ID " + str(j) + " IS " + str(numofsongs))
         total = total + numofsongs
         sql = "SELECT Song.song_name FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s "
         val = str(j)
@@ -514,6 +391,8 @@ def exampleArray():
         res = cursor.fetchall()
 
         yo = str(res)
+
+        print("SONGS IN PLAYLIST " + str(j) + ": " + yo)
       
         newstr = yo.replace("(('", "")
         newstr = newstr.replace("',)", "")
@@ -524,7 +403,7 @@ def exampleArray():
         newstr = newstr.replace("')'","")
         newstr = newstr.replace(")", "")
         temp = newstr.split(",")
-        songnames = songnames + temp
+        songnames = songnames + (temp)
         while("" in songnames) : 
             songnames.remove("") 
 
@@ -543,8 +422,9 @@ def exampleArray():
         artist = artist.replace("')'","")
         artist = artist.replace(")", "")
         temp = artist.split(",")
+        print("ARTISTS IN PLAYLIST " + str(j) + ": " + artist)
 
-        songartists = songartists + temp
+        songartists = songartists + (temp)
 
         sql = "SELECT Song.duration FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s "
         val = str(j)
@@ -558,8 +438,9 @@ def exampleArray():
         duration = duration.replace("(", "")
         duration = duration.replace(")", "")
         temp = duration.split(",")
-        songdurations = songdurations + temp
+        songdurations = songdurations + (temp)
         #songdurations.append(str(res))
+        print("DURATION IN PLAYLIST " + str(j) + ": " + duration)
 
         sql = "SELECT Song.genre FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s "
         val = str(j)
@@ -576,30 +457,57 @@ def exampleArray():
         genre = genre.replace("')'","")
         genre = genre.replace(")", "")
         temp = genre.split(",")
+        print("GENRES IN PLAYLIST " + str(j) + ": " + genre)
 
-        songgenres = songgenres + temp
+        songgenres = songgenres + (temp)
+        print("\n\n\n\n")
+        print("SONGNAMES LIST : ")
+        print(songnames)
+        print("NUM OF SONGS:" + str(len(songnames)))
+        print("\n\n\n\n")
+        print("SONGARTISTS LIST : ")
+        print(songartists)
+        print("NUM OF ARTISTS:" + str(len(songartists)))
+        print("\n\n\n\n")
+        print("SONGDURATION LIST : ")
+        print(songdurations)
+        print("NUM OF DURATIONS:" + str(len(songartists)))
+        print("\n\n\n\n")
+        print("SONGGENRES LIST : ")
+        print(songgenres)
+        print("NUM OF GENRES:" + str(len(songgenres)))
+        print("\n\n\n\n")
+        for i in range(len(songgenres)):
+            returnlist.append([songnames[i],songartists[i],songdurations[i],songgenres[i]])
         
-        total = 0
 
-    print("\n\n\n\n")
-    print("SONGNAMES LIST : ")
-    print(songnames)
-    print("NUM OF SONGS:" + str(len(songnames)))
-    print("\n\n\n\n")
-    print("SONGARTISTS LIST : ")
-    print(songartists)
-    print("NUM OF ARTISTS:" + str(len(songartists)))
-    print("\n\n\n\n")
-    print("SONGDURATION LIST : ")
-    print(songdurations)
-    print("NUM OF DURATIONS:" + str(len(songartists)))
-    print("\n\n\n\n")
-    print("SONGGENRES LIST : ")
-    print(songgenres)
-    print("NUM OF GENRES:" + str(len(songgenres)))
-    print("\n\n\n\n")
 
-    return Response(200, songnames, songartists, songdurations, songgenres).serialize()
+        sql = "SELECT playlist_name, vibe, Playlist_duration FROM Playlist WHERE playlistid = %s"
+        val = str(j)
+        cursor.execute(sql,val)
+        lex = cursor.fetchall()
+        
+        playlistlist.append(str(lex[0][0]) + " ")
+        playlistlist.append(str(lex[0][1]) + " ")
+        playlistlist.append(str(lex[0][2]) + " ")
+
+        playlistlist.append(returnlist)
+        print("\PLAYLISTLIST")  
+        print("\n\n\n\n\n\n")  
+        print(playlistlist)
+        print("\n\n\n\n\n\n") 
+        mack.append(playlistlist)
+        returnlist = []
+        songnames = []
+        songgenres = []
+        songdurations = []
+        songartists = []
+        playlistlist = []
+        
+
+    print(mack)
+
+    return Response(200, mack).serialize()
 
 
 if __name__ == '__main__':
