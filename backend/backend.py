@@ -14,20 +14,19 @@ import json
 import requests
 from datetime import datetime
 
- #SELECT Song.song_name, Song.artist, Song.duration FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = 4;
- #SELECT vibe, playlist_name, Playlist_duration FROM Playlist WHERE playlistid = 4;
+# SELECT Song.song_name, Song.artist, Song.duration FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = 4;
+# SELECT vibe, playlist_name, Playlist_duration FROM Playlist WHERE playlistid = 4;
 
- #SELECT playlist FROM Playlist WHERE userid=%s
- #->this could return many so we save these values in a list
- #->we can loop through the list
- #for id in list_of_pid:
-	#select statements that you wrote
-	#print out all songs in playlist
+# SELECT playlist FROM Playlist WHERE userid=%s
+# ->this could return many so we save these values in a list
+# ->we can loop through the list
+# for id in list_of_pid:
+# select statements that you wrote
+# print out all songs in playlist
 
 global userid
 
 
- 
 # connection string to RDS. This is preferred because it lets you pass in the
 # database argument rather than having to select it first, more condensed
 db = pymysql.connect(
@@ -143,7 +142,7 @@ def user():
                 cursor.execute(sql, val)
                 db.commit()
         return redirect("http://localhost:3000/playlist")
-        #return Response(200, [siun, sipw, userid, firstname, lastname, email, p, hashedPassword, genres, artists]).serialize()
+        # return Response(200, [siun, sipw, userid, firstname, lastname, email, p, hashedPassword, genres, artists]).serialize()
 
 
 # spotify implementation
@@ -167,7 +166,7 @@ def test_spotify():
 @app.route('/allGenres')
 def all_genres():
     results = spotify.recommendation_genre_seeds()
-    
+
     return Response(200, results).serialize()
 
 
@@ -175,7 +174,7 @@ def all_genres():
 def rec():
     if request.method == 'GET':
         results = spotify.recommendations(None, ['hip-hop'])
-        
+
         test = results['tracks'][1]['artists'][0]['name']
         length = len(results['tracks'])
 
@@ -189,7 +188,7 @@ def rec():
         results = spotify.recommendations(
             None, genreSeeds, seed_tracks=None, limit=100)
 
-        #print(results)
+        # print(results)
         #results = dict.fromkeys(results)
         test = results['tracks'][1]['artists'][0]['name']
         length = len(results['tracks'])
@@ -200,7 +199,7 @@ def rec():
 
         res = list(dict.fromkeys(res))
         return Response(200, res).serialize()
-        #return Response(200, results).serialize()
+        # return Response(200, results).serialize()
 
 # NOTE THAT IT RETURNS MERGED RESULTS
 
@@ -217,8 +216,7 @@ def newPlaylist():
     document = request.form.to_dict()
 
     #document['vibe'], document['genresSelected'], document['chosenArtists'], document['playlistName']
-    
-    
+
     # ) [0] = Vibe of playlist
     # ) [1] = All Genres selected
     # ) [2] = Artists selected and the genre they belong to i.e. ['Drake', 'Hip-Hop']
@@ -233,7 +231,7 @@ def newPlaylist():
     print('Vibe of Playlist: ' + vibe)
 
     parsed = artistsAndGenres.split(',')
-    
+
     # i.e. ['ID0', 'GENRE0', 'ID1', 'GENRE1']
     idsAndGenres = []
     # ADD ERROR CHECKING! SOME ARTISTS RETURN ONLY ONE RELEVANT PLAYLIST SO USING [0]['ID']
@@ -248,15 +246,14 @@ def newPlaylist():
 
         if(response1['playlists']['total'] == 0):
             response1 = spotify.search(
-            q=str(parsed[i]),  type='playlist')
+                q=str(parsed[i]),  type='playlist')
 
-    
         idsAndGenres.append(response1['playlists']['items'][0]['id'])
 
         #i + 1 == Genre
         idsAndGenres.append(parsed[i + 1])
-        i += 2 
-    
+        i += 2
+
     finalResponse = []
     i = 0
 
@@ -338,7 +335,8 @@ def newPlaylist():
 
     return redirect("http://localhost:3000/axios")
 
-    #return Response(200, finalResponse).serialize()
+
+    # return Response(200, finalResponse).serialize()
 """
     # NAME OF PLAYLIST TO PUSH TO PLAYLIST TABLE
 
@@ -484,58 +482,125 @@ def all_artists():
 def example():
     return Response(200, "this is dynamically loaded data that is set into a state using axios!").serialize()
 
+
 @app.route('/exampleArray')
 def exampleArray():
     global userid
     # #for testing set userid = 1 to isolate endpoint
     userid = 1
-    #print(userid)
     sql = "SELECT playlistid FROM Creates WHERE userid = %s"
     val = userid
-    cursor.execute(sql, val) 
+    cursor.execute(sql, val)
     playlistCursor = cursor.fetchall()
-    
+    hi = []
     for row in playlistCursor:
-        print(row[0])
-        sql = "SELECT * FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s " 
-        val = str(row[0])
+        hi.append(row[0])
+
+    songnames = []
+    songdurations = []
+    songartists = []
+    songgenres = []
+    total = 0
+    for j in hi:
+        sql = "SELECT COUNT(*) FROM Consists WHERE playlistid = %s"
+        val = j
+        cursor.execute(sql, val)
+        songcount = cursor.fetchall()
+        numofsongs = int((songcount[0][0]))
+        total = total + numofsongs
+        sql = "SELECT Song.song_name FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s "
+        val = str(j)
         cursor.execute(sql, val)
         res = cursor.fetchall()
-        print("\n\n\n\n")
-        print(res)
 
-            
-    #print(hi)
-    #print(str(hi[0][0]))
-    #print(str(hi[0]))
-    
-    #sql = "SELECT * FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s " 
-    #val = str(hi[0][0])
-     
-    #cursor.execute(sql, val)
-    #res = cursor.fetchall()
-    #print("\n\n\n\n")
-    #print(res)
+        yo = str(res)
+      
+        newstr = yo.replace("(('", "")
+        newstr = newstr.replace("',)", "")
+        newstr = newstr.replace("('", "")
+        newstr = newstr.replace("(\"", "")
+        newstr = newstr.replace("\"', '", "")
+        newstr = newstr.replace("\"', '", "")
+        newstr = newstr.replace("')'","")
+        newstr = newstr.replace(")", "")
+        temp = newstr.split(",")
+        songnames = songnames + temp
+        while("" in songnames) : 
+            songnames.remove("") 
 
-    #for row in res:
-        #print(row)
+        sql = "SELECT Song.artist FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s "
+        val = str(j)
+        cursor.execute(sql, val)
+        res = cursor.fetchall()
+        
+        artist = str(res)
+        artist = artist.replace("(('", "")
+        artist = artist.replace("',)", "")
+        artist = artist.replace("('", "")
+        artist = artist.replace("(\"", "")
+        artist = artist.replace("\"', '", "")
+        artist = artist.replace("\"', '", "")
+        artist = artist.replace("')'","")
+        artist = artist.replace(")", "")
+        temp = artist.split(",")
 
-    # sql = "SELECT * Playlist_duration FROM Playlist WHERE Playlist.playlistid = %s " 
-    # val = str(hi[0][0])
-    # cursor.execute(sql, val)
-    # #print(json.dumps(cursor.fetchall(), default=json_util.default))
+        songartists = songartists + temp
 
-    # #print("\n\n\n\n")
-    # #print(hi[0][0]) 
-    
-    # test = cursor.fetchall()
+        sql = "SELECT Song.duration FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s "
+        val = str(j)
+        cursor.execute(sql, val)
+        res = cursor.fetchall()
 
-    # #test = str(json.dumps(test[0][0], default=json_util.default))
-    # test = str(test[0][0]) 
-    # for row in cursor.fetchall():
-    #     print(row)
 
-    return Response(200, str("hi")).serialize()
+        duration = str(res)
+        duration = duration.replace("(datetime.timedelta(seconds=","")
+        duration = duration.replace("),)", "")
+        duration = duration.replace("(", "")
+        duration = duration.replace(")", "")
+        temp = duration.split(",")
+        songdurations = songdurations + temp
+        #songdurations.append(str(res))
+
+        sql = "SELECT Song.genre FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s "
+        val = str(j)
+        cursor.execute(sql, val)
+        res = cursor.fetchall()
+
+        genre = str(res)
+        genre = genre.replace("(('", "")
+        genre = genre.replace("',)", "")
+        genre = genre.replace("('", "")
+        genre = genre.replace("(\"", "")
+        genre = genre.replace("\"', '", "")
+        genre = genre.replace("\"', '", "")
+        genre = genre.replace("')'","")
+        genre = genre.replace(")", "")
+        temp = genre.split(",")
+
+        songgenres = songgenres + temp
+        
+        total = 0
+
+    print("\n\n\n\n")
+    print("SONGNAMES LIST : ")
+    print(songnames)
+    print("NUM OF SONGS:" + str(len(songnames)))
+    print("\n\n\n\n")
+    print("SONGARTISTS LIST : ")
+    print(songartists)
+    print("NUM OF ARTISTS:" + str(len(songartists)))
+    print("\n\n\n\n")
+    print("SONGDURATION LIST : ")
+    print(songdurations)
+    print("NUM OF DURATIONS:" + str(len(songartists)))
+    print("\n\n\n\n")
+    print("SONGGENRES LIST : ")
+    print(songgenres)
+    print("NUM OF GENRES:" + str(len(songgenres)))
+    print("\n\n\n\n")
+
+    return Response(200, songnames, songartists, songdurations, songgenres).serialize()
+
 
 if __name__ == '__main__':
     app.run(host="localhost", port=5000, debug=True)

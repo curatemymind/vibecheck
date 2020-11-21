@@ -42,13 +42,17 @@ class AxiosExample extends React.Component {
 
       //we have to set a temp array and then set that equal to that state
       //this is beacause state arrays have no simple push feature, only setState
-      var tempArray = []
+      var songnames = []
+      var songartists = []
+      var songgenres = []
+      var songduration = []
+
       for (var i = 0; i < response.data.data.length; i++) {
-        tempArray.push(response.data.data[i])
+        songnames.push(response.data.data[i])
       }
-      
+      console.log(songnames)
       this.setState({
-        exampleArray: tempArray
+        exampleArray: songnames
       });
 
     }).catch((error) => {
