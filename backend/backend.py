@@ -145,7 +145,9 @@ def user():
                 val = (userid, firstname, lastname, email, rawPassword)
                 cursor.execute(sql, val)
                 db.commit()
-        return redirect("http://localhost:3000/playlist")
+                return redirect("http://localhost:3000/playlist")
+        return redirect("http://localhost:3000/axios")
+
         # return Response(200, [siun, sipw, userid, firstname, lastname, email, p, hashedPassword, genres, artists]).serialize()
 
 
@@ -362,7 +364,6 @@ def example():
 def exampleArray():
     global userid
     # #for testing set userid = 1 to isolate endpoint
-    userid = 1
     sql = "SELECT playlistid FROM Creates WHERE userid = %s"
     val = userid
     cursor.execute(sql, val)

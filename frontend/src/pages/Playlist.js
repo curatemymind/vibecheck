@@ -5,6 +5,7 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import './testing.css';
 
 const genres = []
 var recommended = []
@@ -198,29 +199,32 @@ class Playlist extends React.Component {
             <div className="container">
               <div className="row">
                 <div className="col-md-6">
-                  <h1>Playlist Name</h1>
+                <div>
+                  <h1><center>Playlist Curation</center></h1>
+                  <h2>Playlist Name</h2>
                   <input type="text" value={this.state.playlistName} onChange={this.handleChange}/>
-                  <h1>Select One Vibe</h1>
+                  <h2>Select One Vibe</h2>
                   <Select options={Vibes} onChange={this.handleVibe} components={animatedComponents}
                   />
                   <br></br>
-                  <h1>Select Three Genres</h1>
+                  <h2>Select Three Genres</h2>
                   <Select options={genres} onChange={this.handleGenres} components={animatedComponents} isMulti />
                   <br></br>
-                  <h1>Select Three Artists</h1>
+                  <h2>Select Three Artists</h2>
                   {this.state.change === true && <Select options={recommended} onChange={this.handleArtists} components={animatedComponents} isMulti />}
                   {this.state.change === false && <Select options={recommended} onChange={this.handleArtists} components={animatedComponents} isMulti />}
                   <br></br>
                   
                    <input type="hidden" id="vibe" name="vibe" value={this.state.vibe}></input>
-                   <br></br>
                    <input type="hidden" id="genresSelected" name="genresSelected" value={this.state.genresSelected}></input>
-                   <br></br>
                    <input type="hidden" id="chosenArtists" name="chosenArtists" value={this.state.chosenArtists}></input>
-                   <br></br>
-                   <input type="hidden" id="playlistName" name="playlistName" value={this.state.playlistName}></input>
-                  <input type="submit" class="button" value="Sign Up" />
+                    <input type="hidden" id="playlistName" name="playlistName" value={this.state.playlistName}></input>
+                    <button type="button" class="btn btn-primary btn-lg">Create Playlist</button>
+
+                  {/* <input type="submit" class="button" value="Create Playlist" /> */}
                 </div>
+                </div>
+
               </div>
             </div>
           </form>
