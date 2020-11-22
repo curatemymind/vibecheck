@@ -14,18 +14,18 @@ class Home extends React.Component {
   constructor() {
     super();
     this.state = {
-      
+
     };
   }
 
-   
+
   componentDidMount() {
-    
+
   }
 
 
   render() {
-    
+
 
     return (
       <form action='http://localhost:5000/user' method='POST'>
@@ -77,6 +77,7 @@ class Home extends React.Component {
           </div>
         </div>
       </form>
+ 
     )
   }
 }

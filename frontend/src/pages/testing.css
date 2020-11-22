@@ -6,9 +6,8 @@ body{
     margin: auto;
     }
 
-    h1,h2,h3,h4,h5,h6 {
+    h1,h2,h3,h4,h5,h6{
         font-family: 'Helvetica', sans-serif;
-        font-size: large;
 
     }
     .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
@@ -31,4 +30,12 @@ body{
         border-color: #D3D3D3;
         text-decoration: none;
 
+    }
+    .bootstrap-select {
+        color:#384c70;
+        border-color:#384c70; 
+    }
+    select {
+        color:#384c70;
+        border-color:#384c70; 
     }

@@ -201,27 +201,40 @@ class Playlist extends React.Component {
                 <div className="col-md-6">
                 <div>
                   <h1><center>Playlist Curation</center></h1>
-                  <h2>Playlist Name</h2>
-                  <input type="text" value={this.state.playlistName} onChange={this.handleChange}/>
-                  <h2>Select One Vibe</h2>
+                  <div class="login-form">
+              <div class="sign-in-htm">
+                <div class="group">
+
+
+                  <label class="label">PLAYLIST NAME</label>
+                  <input placeholder= "Playlist Name" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
+                  <br></br>
+                  <label class="label">PLAYLIST VIBE</label>
                   <Select options={Vibes} onChange={this.handleVibe} components={animatedComponents}
                   />
                   <br></br>
-                  <h2>Select Three Genres</h2>
-                  <Select options={genres} onChange={this.handleGenres} components={animatedComponents} isMulti />
+                  <label class="label">PLAYLIST GENRE(S)</label>
+                  <Select  options={genres} onChange={this.handleGenres} components={animatedComponents} isMulti />
                   <br></br>
-                  <h2>Select Three Artists</h2>
+                  <label class="label">PLAYLIST ARTIST(S)</label>
                   {this.state.change === true && <Select options={recommended} onChange={this.handleArtists} components={animatedComponents} isMulti />}
                   {this.state.change === false && <Select options={recommended} onChange={this.handleArtists} components={animatedComponents} isMulti />}
                   <br></br>
+                </div>
+                </div>
+                </div>
+
+                  {/* <h2>Playlist Name</h2>
+                  <input type="text" value={this.state.playlistName} onChange={this.handleChange}/> */}
+                  
                   
                    <input type="hidden" id="vibe" name="vibe" value={this.state.vibe}></input>
                    <input type="hidden" id="genresSelected" name="genresSelected" value={this.state.genresSelected}></input>
                    <input type="hidden" id="chosenArtists" name="chosenArtists" value={this.state.chosenArtists}></input>
                     <input type="hidden" id="playlistName" name="playlistName" value={this.state.playlistName}></input>
-                    <button type="button" class="btn btn-primary btn-lg">Create Playlist</button>
+                    {/* <button type="button" class="btn btn-primary btn-lg">Create Playlist</button> */}
 
-                  {/* <input type="submit" class="button" value="Create Playlist" /> */}
+                  <input type="submit" class="button" value="Create Playlist" />
                 </div>
                 </div>
 
