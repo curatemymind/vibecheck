@@ -74,6 +74,17 @@ class AxiosExample extends React.Component {
         </div>
         <br></br>
 
+        <label class="label">PLAYLIST ID TO DELETE</label>
+                  <input requiredplaceholder= "Playlist ID" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
+                  <br></br>
+                  <label class="label">PLAYLIST ID TO UPDATE PLAYLIST NAME</label>
+                  <input requiredplaceholder= "Playlist ID" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
+                  <br></br>
+                  <label class="label">NEW PLAYLIST NAME</label>
+                  <input requiredplaceholder= "Playlist ID" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
+                  <br></br>
+        <br></br>
+
         {/*In React, map is the equivalent of a loop for html. it requires (key, value) assignments*/}
         <br></br>
 
@@ -82,11 +93,11 @@ class AxiosExample extends React.Component {
             <Card>
               <Card.Header>
                 <Accordion.Toggle as={Button} variant="link" eventKey="0">
-               <h2>{item[0]} - {item[2]}  ({item[1]})</h2>   
+               <h2>{item[1]} - {item[3]}  ({item[2]}) - id = {item[0]}</h2>   
                 </Accordion.Toggle>
               </Card.Header>
               <Accordion.Collapse eventKey="0">
-                <Card.Body> {(item[3]).map((song, key2) =>
+                <Card.Body> {(item[4]).map((song, key2) =>
                   <li>{song[0]} by {song[1]} - {song[2]} </li>
                 )}</Card.Body>
               </Accordion.Collapse>

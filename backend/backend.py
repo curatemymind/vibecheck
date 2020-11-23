@@ -498,7 +498,7 @@ def exampleArray():
         val = str(j)
         cursor.execute(sql,val)
         lex = cursor.fetchall()
-        
+        playlistlist.append(str(j) + " ")
         playlistlist.append(str(lex[0][0]) + " ")
         playlistlist.append(str(lex[0][1]) + " ")
         playlistlist.append(str(lex[0][2]) + " ")

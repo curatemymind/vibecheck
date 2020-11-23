@@ -207,11 +207,21 @@ class Playlist extends React.Component {
 
 
                   <label class="label">PLAYLIST NAME</label>
-                  <input placeholder= "Playlist Name" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
+                  <input requiredplaceholder= "Playlist Name" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
                   <br></br>
                   <label class="label">PLAYLIST VIBE</label>
-                  <Select options={Vibes} onChange={this.handleVibe} components={animatedComponents}
-                  />
+                  <Select required options={Vibes} onChange={this.handleVibe} components={animatedComponents}/>
+                  {/* <select required>
+                  <option value= ""> </option>
+                    <option value= "Funky"> Funky</option>
+                    <option value= "Happy"> Happy</option>
+                    <option value= "Sad"> Sad</option>
+                    <option value= "Chill"> Chill</option>
+                    <option value= "Flirty"> Flirty</option>
+                    <option value= "Study"> Study</option>
+                    <option value= "Workout"> Workout</option>
+                    <option value= "Nostalgic"> Nostalgic</option>
+                  </select> */}
                   <br></br>
                   <label class="label">PLAYLIST GENRE(S)</label>
                   <Select  options={genres} onChange={this.handleGenres} components={animatedComponents} isMulti />
