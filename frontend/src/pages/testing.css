@@ -8,6 +8,10 @@ body{
 
     h1,h2,h3,h4,h5,h6{
         font-family: 'Helvetica', sans-serif;
+    
+
+            font-size: 20px;
+     
 
     }
     .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {

@@ -98,14 +98,27 @@ class AxiosExample extends React.Component {
             <Card>
               <Card.Header>
                 <Accordion.Toggle as={Button} variant="link" eventKey="0">
-               <h2>{item[1]} - {item[3]}  ({item[2]}) - id = {item[0]}</h2>   
+               <h1>Playlist Name: {item[1]} Playlist Duration: {item[3]}  Playlist Vibe: {item[2]} Playlist Id: {item[0]}</h1>   
                 </Accordion.Toggle>
               </Card.Header>
               <Accordion.Collapse eventKey="0">
-                <Card.Body> {(item[4]).map((song, key2) =>
-                  <li>{song[0]} by {song[1]} - {song[2]} </li>
+    
+               
+                <Card.Body>
+                   {(item[5]).map((song, key2) =>
+                  <li>Song Name: {song[0]} Song Artist: {song[1]} Duration: {song[2]} </li>
+                )}
+                {(item[4]).map((movie, key3) =>
+                  <li>Movie id: {movie[0]} Movie Title: {movie[1]} Movie Genre: {movie[2]} </li>
+                )}
+                </Card.Body>
+               {
+               /* <Card.Body> {(item[5]).map((movie, key3) =>
+                  <li>Movie id: {movie[0]} Movie Title: {movie[1]} Movie Genre: {movie[2]} </li>
                 )}</Card.Body>
+                */}
               </Accordion.Collapse>
+              
             </Card>
 
           </Accordion>
