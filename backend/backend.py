@@ -138,7 +138,7 @@ def login():
         else:
             return Response(200, "unsuccessful login: wrong password").serialize()
     else:
-        Response(200, "unsuccessful login: nonexistent email").serialize()
+        return Response(200, "unsuccessful login: nonexistent email").serialize()
         
 @app.route('/user', methods=['GET', 'POST'])
 def user():
@@ -188,7 +188,7 @@ def user():
                 print("u already have an account")
             else:
                 sql = "INSERT INTO User ( userid, first_name, last_name, email, password) VALUES (%s,%s,%s,%s, %s)"
-                val = (userid, firstname, lastname, email, rawPassword)
+                val = (userid, firstname, lastname, email, hashedPassword)
                 cursor.execute(sql, val)
                 db.commit()
                 return redirect("http://localhost:3000/playlist")
