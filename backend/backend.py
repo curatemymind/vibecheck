@@ -150,8 +150,8 @@ def user():
         email = document['email']
 
         #sign in username + password
-        siun = document['siun']
-        sipw = document['sipw']
+        #siun = document['siun']
+        #sipw = document['sipw']
         p = document['rawPassword']
         rawPassword = document['rawPassword'].encode('utf-8')
 
@@ -170,14 +170,15 @@ def user():
         artists = request.form.getlist('artists')
 
         if(email == ""):
-            # this create table command creates a table
+            """ # this create table command creates a table
             sql = "SELECT email,password FROM User WHERE email=%s AND password =%s"
             val = (siun, sipw)
             print(cursor.execute(sql, val))
             if(cursor.execute(sql, val)):
                 print("login exists")
             else:
-                print("Incorrect info")
+                print("Incorrect info") """
+            print("cleanup")
         else:
             # this create table command creates a table
             sql = "SELECT email FROM User WHERE email=%s"
