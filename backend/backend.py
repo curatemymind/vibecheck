@@ -94,6 +94,25 @@ def getResponseData(code):
     # Return the code's corresponding dict
     return possibleCodes.get(code, errObj)
  
+@app.route('/logout')
+def logout():
+    global userid
+    userid = None
+    return redirect("http://localhost:3000/")
+
+@app.route('/updatePlaylist', methods=['POST'])
+def updatePlaylist():
+    document = request.form.to_dict()
+    playlistid = document['playlistId']
+    newName = document['newName']
+
+    sql = "UPDATE Playlist SET playlist_name = %s WHERE playlistid = %s"
+    val = (newName, playlistid)
+    cursor.execute(sql, val)
+    db.commit()
+
+    return redirect("http://localhost:3000/axios")
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -115,7 +134,7 @@ def login():
         correctPassword = bcrypt.checkpw(password.encode('utf-8'), dbHashedPassword.encode('utf-8'))
 
         if correctPassword == True:
-            return redirect("http://localhost:3000/playlist")
+            return redirect("http://localhost:3000/axios")
         else:
             return Response(200, "unsuccessful login: wrong password").serialize()
     else:
@@ -363,6 +382,28 @@ def newPlaylist():
     sql = "INSERT INTO Creates (userid, playlistid) VALUES (%s,%s)"
     item = (userid, playlistid)
     cursor.execute(sql, item)
+    db.commit()
+
+    return redirect("http://localhost:3000/axios")
+
+@app.route('/deletePlaylist', methods=['POST'])
+def deletePlaylist():
+    document = request.form.to_dict()
+    deleteId = document['deleteId']
+
+    sql = "DELETE FROM Consists WHERE playlistid = %s"
+    val = deleteId
+    cursor.execute(sql, val)
+    db.commit()
+
+    sql = "DELETE FROM Creates WHERE playlistid = %s"
+    val = deleteId
+    cursor.execute(sql, val)
+    db.commit()
+
+    sql = "DELETE FROM Playlist WHERE playlistid = %s"
+    val = deleteId
+    cursor.execute(sql, val)
     db.commit()
 
     return redirect("http://localhost:3000/axios")

@@ -69,20 +69,25 @@ class AxiosExample extends React.Component {
         <div class="btn-group">
 
           <a href="http://localhost:3000/playlist" class="btn btn-primary btn-lg" role="button">Create New Playlist</a>
-          <a href="http://localhost:3000/" class="btn btn-primary btn-lg" role="button">Log Out</a>
+          <a href="http://localhost:5000/logout" class="btn btn-primary btn-lg" role="button">Log Out</a>
 
         </div>
         <br></br>
-
-        <label class="label">PLAYLIST ID TO DELETE</label>
-                  <input requiredplaceholder= "Playlist ID" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
+                  <form action='http://localhost:5000/deletePlaylist' method='POST'>
+                      <label class="label">PLAYLIST ID TO DELETE</label>
+                      <input name="deleteId" requiredplaceholder= "Playlist ID" type="text" class="input" />
+                      <button type="submit">Delete Playlist</button>
+                  </form>
                   <br></br>
-                  <label class="label">PLAYLIST ID TO UPDATE PLAYLIST NAME</label>
-                  <input requiredplaceholder= "Playlist ID" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
-                  <br></br>
-                  <label class="label">NEW PLAYLIST NAME</label>
-                  <input requiredplaceholder= "Playlist ID" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
-                  <br></br>
+                  <form action='http://localhost:5000/updatePlaylist' method='POST'>
+                    <label class="label">PLAYLIST ID TO UPDATE PLAYLIST NAME</label>
+                    <input name="playlistId" requiredplaceholder= "Playlist ID" type="text" class="input" />
+                    <br></br>
+                    <label class="label">NEW PLAYLIST NAME</label>
+                    <input name="newName" requiredplaceholder= "Playlist ID" type="text" class="input" />
+                    <button type="submit">Update Playlist</button>
+                    <br></br>
+                  </form>
         <br></br>
 
         {/*In React, map is the equivalent of a loop for html. it requires (key, value) assignments*/}
