@@ -14,15 +14,19 @@ class Home extends React.Component {
   constructor() {
     super();
     this.state = {
+<<<<<<< HEAD
       toggleLogin: true,
       text: "New User?"
+=======
+
+>>>>>>> 76b0da5bf7cfef5d17e61cf00d6e9da0ec00885d
     };
     this.toggle = this.toggle.bind(this);
   }
 
-   
+
   componentDidMount() {
-    
+
   }
 
     
@@ -38,7 +42,7 @@ class Home extends React.Component {
   }
 
   render() {
-    
+
 
     return (
       <div>
@@ -102,9 +106,15 @@ class Home extends React.Component {
               </div>
             </div>
           </div>
+<<<<<<< HEAD
         </form>}
       </div>
       
+=======
+        </div>
+      </form>
+ 
+>>>>>>> 76b0da5bf7cfef5d17e61cf00d6e9da0ec00885d
     )
   }
 }

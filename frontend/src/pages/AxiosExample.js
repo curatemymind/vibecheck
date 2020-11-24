@@ -5,6 +5,9 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import './loginsignup.css';
 import axios from 'axios';
+import Accordion from 'react-bootstrap/Accordion'
+import Card from "react-bootstrap/Card";
+import Button from "react-bootstrap/Button";
 
 const genres = []
 const animatedComponents = makeAnimated();
@@ -15,67 +18,100 @@ class AxiosExample extends React.Component {
     super();
     this.state = {
       example: null,
-      exampleArray: [],
+      exampleArray: []
     };
   }
 
   componentDidMount() {
-    
+
     //creates a k,v pair list for genres that will be fed into react-select
     axios.get(`http://localhost:5000/example`)
-    .then((response) => {
-      //alert(response.data.data)
-      
-      this.setState({
-        example: response.data.data
-      });
+      .then((response) => {
+        //alert(response.data.data)
 
-    }).catch((error) => {
-      alert("There was an error connecting to the api")
-      console.error(error);
-    });
+        this.setState({
+          example: response.data.data
+        });
+
+      }).catch((error) => {
+        alert("There was an error connecting to the api")
+        console.error(error);
+      });
 
     //secong get request
     axios.get(`http://localhost:5000/exampleArray`)
-    .then((response) => {
-      //alert(response.data.data)
+      .then((response) => {
+        //alert(response.data.data)
+        //we have to set a temp array and then set that equal to that state
+        //this is beacause state arrays have no simple push feature, only setState
+        var mack = []
 
-      //we have to set a temp array and then set that equal to that state
-      //this is beacause state arrays have no simple push feature, only setState
-      var tempArray = []
-      for (var i = 0; i < response.data.data.length; i++) {
-        tempArray.push(response.data.data[i])
-      }
-      
-      this.setState({
-        exampleArray: tempArray
+        for (var i = 0; i < response.data.data.length; i++) {
+          mack.push(response.data.data[i])
+        }
+
+        this.setState({
+          exampleArray: mack,
+
+        });
+
+      }).catch((error) => {
+        //alert("There was an error connecting to the api")
+        console.error(error);
       });
-
-    }).catch((error) => {
-      //alert("There was an error connecting to the api")
-      console.error(error);
-    });
-
   }
-
 
   render() {
 
     return (
       <div >
-        {/*React states can be called directly in the html*/}
-        <h2>{this.state.example}</h2>
+        <br></br>
+        <div class="btn-group">
+
+          <a href="http://localhost:3000/playlist" class="btn btn-primary btn-lg" role="button">Create New Playlist</a>
+          <a href="http://localhost:3000/" class="btn btn-primary btn-lg" role="button">Log Out</a>
+
+        </div>
+        <br></br>
+
+        <label class="label">PLAYLIST ID TO DELETE</label>
+                  <input requiredplaceholder= "Playlist ID" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
+                  <br></br>
+                  <label class="label">PLAYLIST ID TO UPDATE PLAYLIST NAME</label>
+                  <input requiredplaceholder= "Playlist ID" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
+                  <br></br>
+                  <label class="label">NEW PLAYLIST NAME</label>
+                  <input requiredplaceholder= "Playlist ID" type="text" value={this.state.playlistName} onChange={this.handleChange} class="input" />
+                  <br></br>
+        <br></br>
+
         {/*In React, map is the equivalent of a loop for html. it requires (key, value) assignments*/}
-        <ul>
-          {this.state.exampleArray.map((item, key) =>
-            <div>
-              <h1>{item}</h1>
-              <p>you can add any html to this loop!</p>
-            </div>
-          )}
-        </ul>
+        <br></br>
+
+        {this.state.exampleArray.map((item, key) =>
+          <Accordion defaultActiveKey="1">
+            <Card>
+              <Card.Header>
+                <Accordion.Toggle as={Button} variant="link" eventKey="0">
+               <h2>{item[1]} - {item[3]}  ({item[2]}) - id = {item[0]}</h2>   
+                </Accordion.Toggle>
+              </Card.Header>
+              <Accordion.Collapse eventKey="0">
+                <Card.Body> {(item[4]).map((song, key2) =>
+                  <li>{song[0]} by {song[1]} - {song[2]} </li>
+                )}</Card.Body>
+              </Accordion.Collapse>
+            </Card>
+
+          </Accordion>
+        )}
+
+
+
       </div>
+
     )
+
   }
 }
 export default AxiosExample;
