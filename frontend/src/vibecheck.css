@@ -48,4 +48,10 @@ ul {
   padding: 1px;  
   padding-left: 40px;
 }
- 
+.left{
+  float:left;
+}
+
+.clear{
+  clear:both;
+}

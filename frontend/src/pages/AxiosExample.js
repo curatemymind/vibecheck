@@ -74,18 +74,18 @@ class AxiosExample extends React.Component {
         </div>
         <br></br>
                   <form action='http://localhost:5000/deletePlaylist' method='POST'>
-                      <label class="label">PLAYLIST ID TO DELETE</label>
+                     <br></br><label class="label">Enter a Playlist ID to Delete: </label><br></br>
                       <input name="deleteId" requiredplaceholder= "Playlist ID" type="text" class="input" />
-                      <button type="submit">Delete Playlist</button>
+                      <br></br><br></br><button type="submit">Delete Playlist</button>
                   </form>
                   <br></br>
                   <form action='http://localhost:5000/updatePlaylist' method='POST'>
-                    <label class="label">PLAYLIST ID TO UPDATE PLAYLIST NAME</label>
-                    <input name="playlistId" requiredplaceholder= "Playlist ID" type="text" class="input" />
+                    <label class="label">Enter a Playlist ID to Update Playlist Name:</label>
+                    <br></br><input name="playlistId" requiredplaceholder= "Playlist ID" type="text" class="input" />
                     <br></br>
-                    <label class="label">NEW PLAYLIST NAME</label>
-                    <input name="newName" requiredplaceholder= "Playlist ID" type="text" class="input" />
-                    <button type="submit">Update Playlist</button>
+                    <label class="label">Enter New Playlist Name: </label>
+                    <br></br><input name="newName" requiredplaceholder= "Playlist ID" type="text" class="input" />
+                    <br></br><br></br> <button type="submit">Update Playlist</button>
                     <br></br>
                   </form>
         <br></br>

@@ -719,14 +719,20 @@ def exampleArray():
             print(genre)
             print("\n\n")
             movies.append([id, movtit, genre])
-            # sql = "INSERT INTO MovieSuggestion (movieid, movie_title, movie_genre) VALUES(%s, %s, %s)"
-            # val = (id,movtit,genre)
-            # cursor.execute(sql, val)
-            # db.commit()
+            sql = "INSERT INTO MovieSuggestion (movieid, movie_title, movie_genre) VALUES(%s, %s, %s)"
+            val = (id,movtit,genre)
+            cursor.execute(sql, val)
+            db.commit()
             # sql = "INSERT INTO Requests (userid, movieid) VALUES(%s, %s)"
-            # val = (userid,movtit)
+            # val = (userid,movidid)
             # cursor.execute(sql, val)
             # db.commit()
+        
+        for i in movies[:5]:
+            print(i[0])
+            print(i[1])
+            print(i[2])
+
         playlistlist.append(movies[:5])
 
         playlistlist.append(returnlist)
@@ -742,6 +748,7 @@ def exampleArray():
         songdurations = []
         songartists = []
         playlistlist = []
+        movies = []
 
     print("\n\nMACK \n\n")
     print(mack)
