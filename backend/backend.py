@@ -92,6 +92,32 @@ def getResponseData(code):
     return possibleCodes.get(code, errObj)
 
 
+@app.route('/login', methods=['POST'])
+def login():
+    global userid
+    document = request.form.to_dict()
+
+    email = document['email']
+    password = document['rawPassword']
+
+    sql = "SELECT userid, email, password FROM User WHERE email=%s"
+    val = (email)
+            #print(cursor.execute(sql, val))
+    if(cursor.execute(sql, val)):
+        info = cursor.fetchall()
+        userid = info[0][0]
+        dbEmail = info[0][1]
+        dbHashedPassword = info[0][2]
+        print(dbHashedPassword)
+        correctPassword = bcrypt.checkpw(password.encode('utf-8'), dbHashedPassword.encode('utf-8'))
+
+        if correctPassword == True:
+            return redirect("http://localhost:3000/playlist")
+        else:
+            return Response(200, "unsuccessful login: wrong password").serialize()
+    else:
+        Response(200, "unsuccessful login: nonexistent email").serialize()
+        
 @app.route('/user', methods=['GET', 'POST'])
 def user():
     global userid
