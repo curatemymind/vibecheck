@@ -256,6 +256,45 @@ def rec():
 # NOTE THAT IT RETURNS MERGED RESULTS
 
 
+@app.route('/movieReccomendation', methods=['POST','GET'])
+def movieReccomendation():
+    global userid
+    vibe = "Funky"
+    res = ""
+    movies = []
+    url = "https://api.themoviedb.org/3/discover/movie?api_key=bfc99ccbd00163a238c5723818865149&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_genres="
+    if request.method == 'GET':
+
+        if vibe == "Funky":
+            res = "35"
+        elif vibe == "Happy":
+            res = "12"
+        elif vibe == "Sad":
+            res = "18"
+        elif vibe == "Chill":
+            res = "14"
+        elif vibe == "Flirty":
+            res = "10749"
+        elif vibe == "Study":
+            res = "99"
+        elif vibe == "Workout":
+            res = "28"
+        elif vibe == "Nostalgic":
+            res = "36"
+       
+        url = url + res
+        r = requests.get(url)
+        
+        response = r.json()
+        
+    
+        for i in range(len(response['results'])):
+            movies.append(response['results'][i]['original_title'])
+
+        return Response(200, movies).serialize()
+
+
+
 @app.route('/newPlaylist', methods=['POST'])
 def newPlaylist():
     # In the arrays used in this example, even indices hold song/artist names
