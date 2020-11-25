@@ -42,6 +42,19 @@ class Playlist extends React.Component {
 
   componentDidMount() {
 
+    axios.get(`http://localhost:5000/isLoggedIn`)
+    .then((response) => {
+      if(response['data']['data'] === false)
+      {
+        alert("Please login.")
+        window.location.replace("http://localhost:3000/")
+      }
+
+    }).catch((error) => {
+      alert("There was an error connecting to the api")
+      console.error(error);
+    });
+
     //creates a k,v pair list for genres that will be fed into react-select
     axios.get(`http://localhost:5000/allGenres`)
     .then((response) => {

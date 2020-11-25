@@ -11,7 +11,7 @@ import Button from "react-bootstrap/Button";
 
 const genres = []
 const animatedComponents = makeAnimated();
-class AxiosExample extends React.Component {
+class UserData extends React.Component {
 
   //the states of emotion and source will be set to null initially until the user had filled out the form.
   constructor() {
@@ -20,9 +20,23 @@ class AxiosExample extends React.Component {
       example: null,
       exampleArray: []
     };
+    this.delete = this.delete.bind(this)
   }
 
   componentDidMount() {
+    //assures the user is logged in
+    axios.get(`http://localhost:5000/isLoggedIn`)
+      .then((response) => {
+        if(response['data']['data'] === false)
+        {
+          alert("Please login.")
+          window.location.replace("http://localhost:3000/")
+        }
+
+      }).catch((error) => {
+        alert("There was an error connecting to the api")
+        console.error(error);
+      });
 
     //creates a k,v pair list for genres that will be fed into react-select
     axios.get(`http://localhost:5000/example`)
@@ -61,6 +75,17 @@ class AxiosExample extends React.Component {
       });
   }
 
+  delete = function(e) {
+    e.preventDefault()
+    if (window.confirm('Are you sure you want to delete your account?')) {
+      // Delete Account from db
+      console.log("delete")
+    } else {
+      // Do nothing!
+      console.log("do not delete");
+    }
+  }
+
   render() {
 
     return (
@@ -70,6 +95,7 @@ class AxiosExample extends React.Component {
 
           <a href="http://localhost:3000/playlist" class="btn btn-primary btn-lg" role="button">Create New Playlist</a>
           <a href="http://localhost:5000/logout" class="btn btn-primary btn-lg" role="button">Log Out</a>
+          <a href="http://localhost:5000/deleteAccount" class="btn btn-primary btn-lg" role="button" onClick={this.delete}>Delete Account</a>
 
         </div>
         <br></br>
@@ -125,4 +151,4 @@ class AxiosExample extends React.Component {
 
   }
 }
-export default AxiosExample;
+export default UserData;

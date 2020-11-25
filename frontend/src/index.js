@@ -3,21 +3,22 @@ import ReactDOM from 'react-dom';
 import './vibecheck.css';
 import * as serviceWorker from './serviceWorker';
 import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
-import Home from './pages/Home'
-import App from './pages/App'
+import Home from './pages/Launch' //???? dont delete
+import Error from './pages/Error'
 import Playlist from './pages/Playlist'
-import AxiosExample from './pages/AxiosExample'
+import UserData from './pages/UserData';
+import Launch from './pages/Launch';
 
 /*using react router we set a constant equal to whatever component
 we would like to render*/
 const routing = (
   <Router>
     <Switch>
-      <Route exact path="/" component={Home}/> 
-      <Route exact path="/test" component={App}/>  
+      <Route exact path="/" component={Launch}/> 
       <Route exact path="/playlist" component={Playlist}/>  
-      <Route exact path="/axios" component={AxiosExample}/> 
-
+      <Route exact path="/data" component={UserData}/> 
+      <Route exact path="/error" component={Error}/> 
+      <Route exact path="/*" component={Launch}/>  
     </Switch>
   </Router>
 )

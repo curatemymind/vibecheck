@@ -8,7 +8,7 @@ import axios from 'axios';
 
 const genres = []
 const animatedComponents = makeAnimated();
-class Home extends React.Component {
+class Launch extends React.Component {
 
   //the states of emotion and source will be set to null initially until the user had filled out the form.
   constructor() {
@@ -22,6 +22,18 @@ class Home extends React.Component {
 
 
   componentDidMount() {
+    axios.get(`http://localhost:5000/isLoggedIn`)
+    .then((response) => {
+      if(response['data']['data'] === true)
+      {
+        alert("You're already logged in.")
+        window.location.replace("http://localhost:3000/data")
+      }
+
+    }).catch((error) => {
+      alert("There was an error connecting to the api")
+      console.error(error);
+    });
 
   }
 
@@ -107,4 +119,4 @@ class Home extends React.Component {
     )
   }
 }
-export default Home;
+export default Launch;

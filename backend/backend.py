@@ -25,7 +25,7 @@ import datetime
 # print out all songs in playlist
 
 global userid
-
+userid = None
 
 # connection string to RDS. This is preferred because it lets you pass in the
 # database argument rather than having to select it first, more condensed
@@ -93,7 +93,13 @@ def getResponseData(code):
 
     # Return the code's corresponding dict
     return possibleCodes.get(code, errObj)
- 
+
+@app.route('/isLoggedIn')
+def isLoggedIn():
+    if(userid is None):
+        return Response(200, False).serialize()
+    else:
+        return Response(200, True).serialize()
 @app.route('/logout')
 def logout():
     global userid
@@ -111,7 +117,7 @@ def updatePlaylist():
     cursor.execute(sql, val)
     db.commit()
 
-    return redirect("http://localhost:3000/axios")
+    return redirect("http://localhost:3000/data")
 
 
 @app.route('/login', methods=['POST'])
@@ -127,18 +133,18 @@ def login():
             #print(cursor.execute(sql, val))
     if(cursor.execute(sql, val)):
         info = cursor.fetchall()
-        userid = info[0][0]
         dbEmail = info[0][1]
         dbHashedPassword = info[0][2]
         print(dbHashedPassword)
         correctPassword = bcrypt.checkpw(password.encode('utf-8'), dbHashedPassword.encode('utf-8'))
 
         if correctPassword == True:
-            return redirect("http://localhost:3000/axios")
+            userid = info[0][0]
+            return redirect("http://localhost:3000/data")
         else:
-            return Response(200, "unsuccessful login: wrong password").serialize()
+            return redirect("http://localhost:3000/error")
     else:
-        return Response(200, "unsuccessful login: nonexistent email").serialize()
+        return redirect("http://localhost:3000/error")
         
 @app.route('/user', methods=['GET', 'POST'])
 def user():
@@ -148,53 +154,30 @@ def user():
         firstname = document['firstname']
         lastname = document['lastname']
         email = document['email']
-
-        #sign in username + password
-        #siun = document['siun']
-        #sipw = document['sipw']
-        p = document['rawPassword']
         rawPassword = document['rawPassword'].encode('utf-8')
 
         hashedPassword = bcrypt.hashpw(rawPassword, bcrypt.gensalt())
 
-        sql = "SELECT MAX(userid) FROM User"
-        cursor.execute(sql)
-        temp_userid = [item[0] for item in cursor.fetchall()]
-
-        if temp_userid[0] is None:
-            userid = 1
+        # this create table command creates a table
+        sql = "SELECT email FROM User WHERE email=%s"
+        val = (email)
+        if(cursor.execute(sql, val)):
+            return redirect("http://localhost:3000/error")
         else:
-            userid = temp_userid[0] + 1
+            sql = "SELECT MAX(userid) FROM User"
+            cursor.execute(sql)
+            temp_userid = [item[0] for item in cursor.fetchall()]
 
-        genres = request.form.getlist('genres')
-        artists = request.form.getlist('artists')
-
-        if(email == ""):
-            """ # this create table command creates a table
-            sql = "SELECT email,password FROM User WHERE email=%s AND password =%s"
-            val = (siun, sipw)
-            print(cursor.execute(sql, val))
-            if(cursor.execute(sql, val)):
-                print("login exists")
+            if temp_userid[0] is None:
+                userid = 1
             else:
-                print("Incorrect info") """
-            print("cleanup")
-        else:
-            # this create table command creates a table
-            sql = "SELECT email FROM User WHERE email=%s"
-            val = (email)
-            if(cursor.execute(sql, val)):
-                # alert here
-                print("u already have an account")
-            else:
-                sql = "INSERT INTO User ( userid, first_name, last_name, email, password) VALUES (%s,%s,%s,%s, %s)"
-                val = (userid, firstname, lastname, email, hashedPassword)
-                cursor.execute(sql, val)
-                db.commit()
-                return redirect("http://localhost:3000/playlist")
-        return redirect("http://localhost:3000/axios")
-
-        # return Response(200, [siun, sipw, userid, firstname, lastname, email, p, hashedPassword, genres, artists]).serialize()
+                userid = temp_userid[0] + 1
+            sql = "INSERT INTO User ( userid, first_name, last_name, email, password) VALUES (%s,%s,%s,%s, %s)"
+            val = (userid, firstname, lastname, email, hashedPassword)
+            cursor.execute(sql, val)
+            db.commit()
+            return redirect("http://localhost:3000/data")
+        
 
 
 # spotify implementation
@@ -356,7 +339,7 @@ def newPlaylist():
     db.commit()
 
     for item in finalResponse:
-        sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre) VALUES (%s,%s,%s,%s, %s)"
+        sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre, playlistid) VALUES (%s,%s,%s,%s, %s, %s)"
         item[1] = int(item[1])
         totalms = totalms + item[1]
         seconds = (item[1]/1000) % 60
@@ -365,7 +348,7 @@ def newPlaylist():
         minutes = int(minutes)
         hours = (item[1]/(1000*60*60)) % 2
         item[1] = "%d:%d:%d" % (hours, minutes, seconds)
-        item = (songid, item[0], item[2], item[1], item[3])
+        item = (songid, item[0], item[2], item[1], item[3], playlistid)
         cursor.execute(sql, item)
         db.commit()
         sql = "INSERT INTO Consists (songid, playlistid) VALUES (%s,%s)"
@@ -451,7 +434,7 @@ def newPlaylist():
     
     #return Response(200, res).serialize()
     #return Response(200, movies[:5]).serialize()
-    return redirect("http://localhost:3000/axios")
+    return redirect("http://localhost:3000/data")
 
 @app.route('/deletePlaylist', methods=['POST'])
 def deletePlaylist():
@@ -468,12 +451,17 @@ def deletePlaylist():
     cursor.execute(sql, val)
     db.commit()
 
+    sql = "DELETE FROM Requests WHERE playlistid = %s"
+    val = deleteId
+    cursor.execute(sql, val)
+    db.commit()
+
     sql = "DELETE FROM MovieSuggestion WHERE playlistid = %s"
     val = deleteId
     cursor.execute(sql, val)
     db.commit()
 
-    sql = "DELETE FROM Request WHERE playlistid = %s"
+    sql = "DELETE FROM Song WHERE playlistid = %s"
     val = deleteId
     cursor.execute(sql, val)
     db.commit()
@@ -486,7 +474,7 @@ def deletePlaylist():
 
     
 
-    return redirect("http://localhost:3000/axios")
+    return redirect("http://localhost:3000/data")
 
 @app.route('/allArtists')
 def all_artists():
