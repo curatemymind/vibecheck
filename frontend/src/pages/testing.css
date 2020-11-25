@@ -1,7 +1,7 @@
 body{
     background: url(background.jpg);
     background-size: auto;
-    background-repeat: repeat-x;
+    background-repeat: auto;
     font-family: 'Helvetica', sans-serif;
     margin: auto;
     }
