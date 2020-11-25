@@ -339,7 +339,7 @@ def newPlaylist():
     db.commit()
 
     for item in finalResponse:
-        sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre, playlistid) VALUES (%s,%s,%s,%s, %s, %s)"
+        sql = "INSERT INTO Song ( songid, song_name, artist, duration, genre, playlistid, userid) VALUES (%s,%s,%s,%s, %s, %s,%s)"
         item[1] = int(item[1])
         totalms = totalms + item[1]
         seconds = (item[1]/1000) % 60
@@ -348,11 +348,11 @@ def newPlaylist():
         minutes = int(minutes)
         hours = (item[1]/(1000*60*60)) % 2
         item[1] = "%d:%d:%d" % (hours, minutes, seconds)
-        item = (songid, item[0], item[2], item[1], item[3], playlistid)
+        item = (songid, item[0], item[2], item[1], item[3], playlistid, userid)
         cursor.execute(sql, item)
         db.commit()
-        sql = "INSERT INTO Consists (songid, playlistid) VALUES (%s,%s)"
-        item = (songid, playlistid)
+        sql = "INSERT INTO Consists (songid, playlistid, userid) VALUES (%s,%s,%s)"
+        item = (songid, playlistid,userid)
         cursor.execute(sql, item)
         db.commit()
 
@@ -423,8 +423,8 @@ def newPlaylist():
         print("\n\n")
         movies.append([idA, movtit, genre])
         idA = idA + playlistid
-        sql = "INSERT INTO MovieSuggestion (movieid, movie_title, movie_genre, playlistid) VALUES(%s, %s, %s, %s)"
-        val = (idA,movtit,genre,playlistid)
+        sql = "INSERT INTO MovieSuggestion (movieid, movie_title, movie_genre, playlistid, userid) VALUES(%s, %s, %s, %s, %s)"
+        val = (idA,movtit,genre,playlistid, userid)
         cursor.execute(sql, val)
         db.commit()
         sql = "INSERT INTO Requests (userid, movieid, playlistid) VALUES(%s, %s, %s)"
@@ -435,6 +435,49 @@ def newPlaylist():
     #return Response(200, res).serialize()
     #return Response(200, movies[:5]).serialize()
     return redirect("http://localhost:3000/data")
+
+@app.route('/deleteAccount')
+def deleteAccount():
+    global userid
+
+    sql = "DELETE FROM Consists WHERE userid = %s"
+    val = userid
+    cursor.execute(sql, val)
+    db.commit()
+
+    sql = "DELETE FROM Creates WHERE userid = %s"
+    val = userid
+    cursor.execute(sql, val)
+    db.commit()
+
+    sql = "DELETE FROM Requests WHERE userid = %s"
+    val = userid
+    cursor.execute(sql, val)
+    db.commit()
+
+    sql = "DELETE FROM MovieSuggestion WHERE userid = %s"
+    val = userid
+    cursor.execute(sql, val)
+    db.commit()
+
+    sql = "DELETE FROM Song WHERE userid = %s"
+    val = userid
+    cursor.execute(sql, val)
+    db.commit()
+    
+    #order matters, must go last as it is a foreign key
+    sql = "DELETE FROM Playlist WHERE userid = %s"
+    val = userid
+    cursor.execute(sql, val)
+    db.commit()
+
+    sql = "DELETE FROM User WHERE userid = %s"
+    val = userid
+    cursor.execute(sql, val)
+    db.commit()
+
+    userid = None
+    return redirect("http://localhost:3000/")
 
 @app.route('/deletePlaylist', methods=['POST'])
 def deletePlaylist():
