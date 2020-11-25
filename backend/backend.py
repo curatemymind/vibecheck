@@ -297,8 +297,7 @@ def newPlaylist():
             q=str(vibe + " " + parsed[i]),  type='playlist')
 
         if(response1['playlists']['total'] == 0):
-            response1 = spotify.search(
-                q=str(parsed[i]),  type='playlist')
+            response1 = spotify.search(q=str(parsed[i]),  type='playlist')
 
         idsAndGenres.append(response1['playlists']['items'][0]['id'])
 
@@ -312,14 +311,22 @@ def newPlaylist():
     while i < len(idsAndGenres):
         # queries playlist
         res = spotify.playlist(idsAndGenres[i])
-        # ERROR CHECK TO SEE IF PLAYLIST HAS FIVE SONGS
-        for j in range(5):
+        # ERROR CHECK TO SEE IF dele HAS FIVE SONGS
+        num = 0
+        if len(res['tracks']['items']) > 5:
+            num = 5
+        else:
+            num = len(res['tracks']['items'])
+
+        print(len(res['tracks']['items']))
+        
+            
+        for j in range(num):
             # makes array of metadata to append into larger final response array
             innerRes = []
             innerRes.append(res['tracks']['items'][j]['track']['name'])
             innerRes.append(res['tracks']['items'][j]['track']['duration_ms'])
-            innerRes.append(res['tracks']['items'][j]
-                            ['track']['artists'][0]['name'])
+            innerRes.append(res['tracks']['items'][j]['track']['artists'][0]['name'])
             innerRes.append(idsAndGenres[i + 1])
             finalResponse.append(innerRes)
         i += 2
@@ -385,6 +392,65 @@ def newPlaylist():
     cursor.execute(sql, item)
     db.commit()
 
+    movidid = ""
+    movies = []
+    genre = ""
+    url = "https://api.themoviedb.org/3/discover/movie?api_key=bfc99ccbd00163a238c5723818865149&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_genres="
+  
+
+    if vibe == "Funky":
+        movidid = "35"
+        genre = "Comedy"
+    elif vibe == "Happy":
+        movidid = "12"
+        genre = "Adventure"
+    elif vibe == "Sad":
+        movidid = "18"
+        genre = "Drama"
+    elif vibe == "Chill":
+        movidid = "14"
+        genre = "Fantasy"
+    elif vibe == "Flirty":
+        movidid = "10749"
+        genre = "Romance"
+    elif vibe == "Study":
+        movidid = "99"
+        genre = "Documentary"
+    elif vibe == "Workout":
+        movidid = "28"
+        genre = "Action"
+    elif vibe == "Nostalgic":
+        movidid = "36"
+        genre = "History"
+
+    url = url + movidid
+    r = requests.get(url)
+
+    response = r.json()
+    idA = ""
+    movtit = ""
+    for i in range(5):
+        idA = response['results'][i]['id']
+        movtit = response['results'][i]['original_title']
+
+        print("\n\n")
+        print(idA)
+        print(movtit)
+        print(genre)
+        print("\n\n")
+        movies.append([idA, movtit, genre])
+        idA = idA + playlistid
+        sql = "INSERT INTO MovieSuggestion (movieid, movie_title, movie_genre, playlistid) VALUES(%s, %s, %s, %s)"
+        val = (idA,movtit,genre,playlistid)
+        cursor.execute(sql, val)
+        db.commit()
+        sql = "INSERT INTO Requests (userid, movieid, playlistid) VALUES(%s, %s, %s)"
+        val = (userid,idA,playlistid)
+        cursor.execute(sql, val)
+        db.commit()
+    
+    #return Response(200, res).serialize()
+    #return Response(200, movies[:5]).serialize()
     return redirect("http://localhost:3000/axios")
 
 @app.route('/deletePlaylist', methods=['POST'])
@@ -402,10 +468,23 @@ def deletePlaylist():
     cursor.execute(sql, val)
     db.commit()
 
+    sql = "DELETE FROM MovieSuggestion WHERE playlistid = %s"
+    val = deleteId
+    cursor.execute(sql, val)
+    db.commit()
+
+    sql = "DELETE FROM Request WHERE playlistid = %s"
+    val = deleteId
+    cursor.execute(sql, val)
+    db.commit()
+    
+    #order matters, must go last as it is a foreign key
     sql = "DELETE FROM Playlist WHERE playlistid = %s"
     val = deleteId
     cursor.execute(sql, val)
     db.commit()
+
+    
 
     return redirect("http://localhost:3000/axios")
 
@@ -450,13 +529,13 @@ def exampleArray():
     playlistlist = []
     total = 0
     for j in hi:
-        print("\n\n\nLOOKING AT PLAYLIST ID " + str(j))
+        
         sql = "SELECT COUNT(*) FROM Consists WHERE playlistid = %s"
         val = j
         cursor.execute(sql, val)
         songcount = cursor.fetchall()
         numofsongs = int((songcount[0][0]))
-        print("NUMBER OF SONGS IN PLAYLIST ID " + str(j) + " IS " + str(numofsongs))
+        
         total = total + numofsongs
         sql = "SELECT Song.song_name FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s "
         val = str(j)
@@ -465,7 +544,7 @@ def exampleArray():
 
         yo = str(res)
 
-        print("SONGS IN PLAYLIST " + str(j) + ": " + yo)
+        
       
         newstr = yo.replace("(('", "")
         newstr = newstr.replace("',)", "")
@@ -495,7 +574,7 @@ def exampleArray():
         artist = artist.replace("')'","")
         artist = artist.replace(")", "")
         temp = artist.split(",")
-        print("ARTISTS IN PLAYLIST " + str(j) + ": " + artist)
+       
 
         songartists = songartists + (temp)
 
@@ -513,7 +592,7 @@ def exampleArray():
         temp = duration.split(",")
         songdurations = songdurations + (temp)
         #songdurations.append(str(res))
-        print("DURATION IN PLAYLIST " + str(j) + ": " + duration)
+      
 
         sql = "SELECT Song.genre FROM Song INNER JOIN Consists ON Song.songid=Consists.songid WHERE Consists.playlistid = %s "
         val = str(j)
@@ -530,33 +609,16 @@ def exampleArray():
         genre = genre.replace("')'","")
         genre = genre.replace(")", "")
         temp = genre.split(",")
-        print("GENRES IN PLAYLIST " + str(j) + ": " + genre)
+        
 
         songgenres = songgenres + (temp)
-        print("\n\n\n\n")
-        print("SONGNAMES LIST : ")
-        print(songnames)
-        print("NUM OF SONGS:" + str(len(songnames)))
-        print("\n\n\n\n")
-        print("SONGARTISTS LIST : ")
-        print(songartists)
-        print("NUM OF ARTISTS:" + str(len(songartists)))
-        print("\n\n\n\n")
-        print("SONGDURATION LIST : ")
-        print(songdurations)
-        print("NUM OF DURATIONS:" + str(len(songartists)))
-        print("\n\n\n\n")
-        print("SONGGENRES LIST : ")
-        print(songgenres)
-        print("NUM OF GENRES:" + str(len(songgenres)))
-        print("\n\n\n\n")
+        
 
         h = []
         for i in (songdurations):
             h.append(convert(int(i)))
 
-        print("H!!!!!!!!!!!!!!!!!\n\n\n\n\n")
-        print(h)
+        
         for i in range(len(songgenres)):
             returnlist.append([songnames[i] + " ",songartists[i] + " ",h[i]+ " ",songgenres[i]])
         
@@ -572,10 +634,20 @@ def exampleArray():
         playlistlist.append(str(lex[0][2]) + " ")
 
         playlistlist.append(returnlist)
-        print("\PLAYLISTLIST")  
-        print("\n\n\n\n\n\n")  
-        print(playlistlist)
-        print("\n\n\n\n\n\n") 
+
+        sql = "SELECT movie_title FROM MovieSuggestion WHERE playlistid = %s"
+        val = str(j)
+        cursor.execute(sql,val)
+        movieQuery = cursor.fetchall()
+
+        #print(movieQuery)
+        finalMovies = []
+        for row in movieQuery:
+            finalMovies.append(row[0])
+        print(finalMovies)
+        playlistlist.append(finalMovies)
+
+         
         mack.append(playlistlist)
         returnlist = []
         songnames = []
@@ -585,10 +657,72 @@ def exampleArray():
         playlistlist = []
         
 
-    print(mack)
+   
 
     return Response(200, mack).serialize()
 
+@app.route('/movieReccomendation', methods=['POST', 'GET'])
+def movieReccomendation():
+    global userid
+    vibe = "Flirty"
+    movidid = ""
+    movies = []
+    genre = ""
+    url = "https://api.themoviedb.org/3/discover/movie?api_key=bfc99ccbd00163a238c5723818865149&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&with_genres="
+    if request.method == 'GET':
+
+        if vibe == "Funky":
+            movidid = "35"
+            genre = "Comedy"
+        elif vibe == "Happy":
+            movidid = "12"
+            genre = "Adventure"
+        elif vibe == "Sad":
+            movidid = "18"
+            genre = "Drama"
+        elif vibe == "Chill":
+            movidid = "14"
+            genre = "Fantasy"
+        elif vibe == "Flirty":
+            movidid = "10749"
+            genre = "Romance"
+        elif vibe == "Study":
+            movidid = "99"
+            genre = "Documentary"
+        elif vibe == "Workout":
+            movidid = "28"
+            genre = "Action"
+        elif vibe == "Nostalgic":
+            movidid = "36"
+            genre = "History"
+
+        url = url + movidid
+        r = requests.get(url)
+
+        response = r.json()
+        id = ""
+        movtit = ""
+        for i in range(len(response['results'])):
+            id = response['results'][i]['id']
+            movtit = response['results'][i]['original_title']
+
+            print("\n\n")
+            print(id)
+            print(movtit)
+            print(genre)
+            print("\n\n")
+            movies.append([id, movtit, genre])
+
+            # sql = "INSERT INTO MovieSuggestion (movieid, movie_title, movie_genre) VALUES(%s, %s, %s)"
+            # val = (id,movtit,genre)
+            # cursor.execute(sql, val)
+            # db.commit()
+            # sql = "INSERT INTO Requests (userid, movieid) VALUES(%s, %s)"
+            # val = (userid,movtit)
+            # cursor.execute(sql, val)
+            # db.commit()
+
+        return Response(200, movies).serialize()
 
 if __name__ == '__main__':
     app.run(host="localhost", port=5000, debug=True)

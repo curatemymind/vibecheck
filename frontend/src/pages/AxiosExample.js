@@ -102,9 +102,15 @@ class AxiosExample extends React.Component {
                 </Accordion.Toggle>
               </Card.Header>
               <Accordion.Collapse eventKey="0">
-                <Card.Body> {(item[4]).map((song, key2) =>
-                  <li>{song[0]} by {song[1]} - {song[2]} </li>
-                )}</Card.Body>
+                <Card.Body> 
+                  {(item[4]).map((song, key2) =>
+                    <li>{song[0]} by {song[1]} - {song[2]} </li>
+                  )}
+                  <h2>Movies</h2>
+                  {(item[5]).map((movie, key3) =>
+                  <li>{movie}</li>
+                  )}
+                </Card.Body>
               </Accordion.Collapse>
             </Card>
 
